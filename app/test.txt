@@ -1,0 +1,163 @@
+"use client";
+import React from 'react';
+import { useEffect, useState } from "react";
+import Preloader from './comps/forms/Preloader';
+import Link from 'next/link';
+
+interface Category {
+  id: number;
+  cat_name: string;
+  avatar: string;
+  products: number;
+
+}
+
+
+const Category: React.FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/categories")
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch categorys");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setCategories(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
+  if (loading) {
+    <Preloader />
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500 py-6"> <Preloader /></div>;
+  }
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 p-3">
+      {categories.map((cat) => (
+        <div key={cat.id} className="flex flex-col bg-white p-3 shadow rounded-lg hover:shadow-lg transition-transform transform hover:scale-95">
+          <div className="w-full h-28 mb-2">
+            <img src={cat.avatar} alt={cat.cat_name} className='w-full h-full object-cover rounded-lg' />
+          </div>
+          <Link href="" className='flex flex-col'>
+            <div className="name text-black text-sm md:text-base font-semibold truncate">{cat.cat_name}</div>
+            <div className="count text-blue-500 text-xs">{cat.products} +</div>
+            <button className='mt-2 bg-red-500 text-white px-3 py-1 text-xs rounded-md flex items-center justify-center transition-colors hover:bg-red-600'>
+              View more <i className="bi bi-arrow-right ml-1"></i>
+            </button>
+          </Link>
+        </div>
+      ))}
+        
+        {/** 
+        <div className="flex justify-center p-2 mt-10">
+            <div className="border border-blue-300 p-6 rounded-lg w-[35%]">
+                <h1 className="text-center text-2xl text-gray-700">REGISTER NOW</h1>
+                {responseMessage && (
+                    <div
+                        id="response"
+                        className={`fixed px-6 py-3 shadow-lg ${isSuccess ? "bg-green-100" : "bg-red-100"} flex justify-between items-center right-9 top-[27%] z-[99] rounded-2xl border ${isSuccess ? "border-green-300" : "border-red-300"} text-slate-600`}
+                    >
+                        <p>{responseMessage}</p>
+                        <span className="bi bi-x ml-3 cursor-pointer text-[18px]" onClick={() => setResponseMessage("")}></span>
+                    </div>
+                )}
+                <form onSubmit={handleSubmit}>
+                    <div className="flex w-full border border-slate-400 rounded px-3 py-[8px] my-3">
+                        <i className="bi bi-person text-lg text-gray-800"></i>
+                        <input
+                            type="text"
+                            name="name"
+                            id="name"
+                            placeholder="Name"
+                            className="w-full py-1 px-2 rounded text-gray-800 bg-transparent outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {errors.name && <p className="text-red-500">{errors.name}</p>}
+
+                    <div className="flex w-full border border-slate-400 rounded px-3 py-[8px] my-3">
+                        <i className="bi bi-telephone text-lg text-gray-800"></i>
+                        <input
+                            type="text"
+                            name="phone"
+                            id="phone"
+                            placeholder="Phone"
+                            className="w-full py-1 px-2 rounded text-gray-800 bg-transparent outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {errors.phone && <p className="text-red-500">{errors.phone}</p>}
+
+                    <div className="flex w-full border border-slate-400 rounded px-3 py-[8px] my-3">
+                        <i className="bi bi-envelope text-lg text-gray-800"></i>
+                        <input
+                            type="email"
+                            name="email"
+                            id="email"
+                            placeholder="Email"
+                            className="w-full py-1 px-2 rounded text-gray-800 bg-transparent outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {errors.email && <p className="text-red-500">{errors.email}</p>}
+
+                    <div className="flex w-full border border-slate-400 rounded px-3 py-[8px] my-3">
+                        <i className="bi bi-key text-lg text-gray-800"></i>
+                        <input
+                            type="password"
+                            name="password"
+                            id="password"
+                            placeholder="Password"
+                            className="w-full py-1 px-2 rounded text-gray-800 bg-transparent outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {errors.password && <p className="text-red-500">{errors.password}</p>}
+
+                    <div className="flex w-full border border-slate-400 rounded px-3 py-[8px] my-3">
+                        <i className="bi bi-key text-lg text-gray-800"></i>
+                        <input
+                            type="password"
+                            name="confirm"
+                            id="confirm"
+                            placeholder="Confirm password"
+                            className="w-full py-1 px-2 rounded text-gray-800 bg-transparent outline-none"
+                            onChange={handleChange}
+                        />
+                    </div>
+                    {errors.confirm && <p className="text-red-500">{errors.confirm}</p>}
+
+                    <div className="mt-3">
+                        <button
+                            type="submit"
+                            disabled={!isFormValid}
+                            className={`w-full border my-5 ${isFormValid ? "bg-green-400" : "bg-gray-300"} py-[10px] rounded-md text-white`}
+                        >
+                            <i className="bi bi-box-arrow-in-right text-white"></i> REGISTER
+                        </button>
+                    </div>
+                </form>
+                <div className="text-right">
+                    <span>Already a member? </span>
+                    <Link href="/auth/login" className="text-blue-500">Login</Link>
+                </div>
+            </div>
+        </div>
+        FCiAfw2r9d9wpUZH
+        */}
+    </div>
+  );
+};
+
+export default Category;

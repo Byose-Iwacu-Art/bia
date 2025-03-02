@@ -1,0 +1,322 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Import Glider.js styles */
+*{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+}
+
+main{
+    margin-bottom: 20px;
+    margin-top: 140px;
+}
+.slidebg{
+  background: linear-gradient(180deg, #f2fbfa77, #bfbfbfc0, #013a20a1);
+}
+.disbg{
+  background: linear-gradient(180deg, #0f172a, #0f172ad6, #013a20a1);
+}
+.authbg{
+  background: linear-gradient(200deg, #325e27, #101936d6, #01253aa1, rgb(215, 147, 83));
+}
+/*footer*/
+footer .container {
+  padding: 20px 15px;
+  align-items: center;
+  width: 90%;
+  margin: auto;
+  color: #000b;
+}
+
+.col-1 {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  justify-content: space-between;
+  gap: 20px; /* Adds spacing between columns */
+}
+
+.col-1 .c-col {
+  display: flex;
+  flex-wrap: wrap; /* Allows content to wrap on small screens */
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%; /* Full width on mobile */
+}
+
+@media (min-width: 768px) {
+  .col-1 .c-col {
+    width: 50%; /* Adjusts width for larger screens */
+  }
+}
+
+.container .fore {
+  padding-bottom: 25px;
+}
+
+.container h1 {
+  color: #f97316;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+@media (min-width: 768px) {
+  .container h1 {
+    font-size: 30px; /* Larger heading on bigger screens */
+  }
+  
+}
+
+.container p {
+  font-size: 16px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  letter-spacing: 1px;
+}
+
+@media (min-width: 768px) {
+  .container p {
+    font-size: 17px; /* Slightly larger text on larger screens */
+  }
+}
+
+.c-col h4 {
+  margin: 20px 0;
+  color: #000b;
+  font-size: 14px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.loc-col .row .data {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 5px;
+  padding: 8px;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: #f97316;
+}
+
+.data .text {
+  margin-left: 10px; /* Reduced margin for better mobile experience */
+  color: #000b;
+  white-space: nowrap;
+}
+
+.follow-col {
+  margin: 20px 0 0;
+  padding-left: 0; /* Adjusted margin for small screens */
+}
+
+@media (min-width: 768px) {
+  .follow-col {
+    margin-left: 20px; /* Restores margin for larger screens */
+    padding-left: 20px;
+  }
+}
+
+.form-col {
+  width: 100%; /* Full width on mobile */
+}
+
+@media (min-width: 768px) {
+  .form-col {
+    width: 45%; /* Restores width for larger screens */
+  }
+}
+
+.field-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.inputs input,
+.text textarea {
+  width: 100%; /* Full width for input and text areas */
+}
+
+.inputs input::placeholder,
+.text textarea::placeholder {
+  color: #0009;
+}
+
+.inputs input,
+.text textarea,
+.submit button {
+  color: #0009;
+  padding: 16px 20px;
+  background: white;
+  outline: none;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.text textarea {
+  height: 20vh;
+  width: 100%;
+  resize: none;
+}
+
+.inputs input:focus,
+.text textarea:focus {
+  border-bottom: 1px solid #f97316;
+}
+
+.submit button {
+  width: 100%;
+  background: #f97316;
+  color: #fff;
+  cursor: pointer;
+}
+
+.submit button:hover {
+  background: #2bc00277;
+}
+
+.bottom {
+  background: #0002;
+  padding: 8px 0;
+}
+
+.bottom .col {
+  width: 90%;
+  margin: auto;
+  color: #0009;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  flex-direction: column; /* Stack items on mobile */
+}
+
+@media (min-width: 768px) {
+  .bottom .col {
+    flex-direction: row; /* Side by side on larger screens */
+  }
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #f97316;
+  padding: 10px;
+  border-radius: 50%;
+  color: white;
+  cursor: pointer;
+}
+
+    .back-to-top {
+      position: fixed;
+      bottom: 20px;
+      right: 55px;
+      background-color: #c99240;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+      z-index: 9999; /* Ensure it's above other content */
+      display: none; /* Hide by default */
+    }
+      
+    .back-to-top:hover {
+      background-color: #f89e9e;
+    }
+    
+    @media (max-width: 640px) {
+      .box {
+          min-width: 100%; /* Stack full width on very small screens */
+      }
+      main{
+        margin-bottom: 20px;
+        margin-top: 100px;
+    }
+  }
+  
+  @media (min-width: 640px) {
+      .box {
+          min-width: 48%; /* Two items per row on small screens */
+      }
+  }
+  
+  @media (min-width: 768px) {
+      .box {
+          min-width: 30%; /* Three items per row on medium screens */
+      }
+      main{
+        margin-top: 130px;
+      }
+  }
+  
+  @media (min-width: 1024px) {
+      .box {
+          min-width: 22%; /* Four items per row on large screens */
+      }
+  }
+  
+  @media (min-width: 1280px) {
+      .box {
+          min-width: 16%; /* Six items per row on extra-large screens */
+      }
+  }
+  
+  @media ((max-width: 768px) or (max-width: 608px) ) {
+      .small-device-menu {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #f87171;
+        z-index: 1000;
+        border-top: 1px solid #ffc4b0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+    
+      .small-device-menu a {
+        flex: 1;
+        text-align: center;
+        color: #000;
+        font-size: 14px;
+        padding: 10px 0;
+      }
+    
+      .small-device-menu i {
+        display: block;
+        font-size: 23px;
+        color: #dddddd;
+      }
+    
+      .small-device-menu span {
+        font-size: 12px;
+      }
+    
+      /* Add subtle animation for active link */
+      .small-device-menu a.active {
+        color: #ff6600;
+      }
+    }
+    /* Custom styles for Swiper navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+  background-color: rgba(0, 0, 0, 0.3) !important; /* semi-transparent background */
+  color: white !important; /* white arrow color */
+  padding: 20px 10px !important;
+  z-index: 10 !important;
+  font-size: 14px !important;
+}
+
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  background-color: rgba(0, 0, 0, 0.8) !important; /* darker background on hover */
+}
+
+/* Position buttons */
+.swiper-button-next {
+  right: 10px !important; /* Align to the right */
+}
+
+.swiper-button-prev {
+  left: 10px !important; /* Align to the left */
+}
