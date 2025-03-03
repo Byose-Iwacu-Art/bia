@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import CartDropdown from "../comps/nav/cart";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
+import WarningPopup from "./access";
 
 interface CartItem {
   id: number;
@@ -78,7 +79,7 @@ const NavBar = () => {
         <p className='text-slate-300 p-1 px-4'>We are hosting new Tailors Dream College soon, book a seat!</p> 
         <Link className='bg-green-400 text-white px-2 py-[4px] m-1 rounded cursor-pointer' href={"https://tailors.biafricantouch.com/apply"}>Register now</Link>
       </Ads>
-
+      <WarningPopup message="This platform is still under development ... We promise to be back soon" />
       {/* Navigation */}
       <nav className="flex justify-start items-center px-2 flex-col-reverse sm:flex-row sm:justify-between sm:pb-0 sm:px-10" >
         {/* Logo and search bar */}
