@@ -67,9 +67,9 @@ const Promotions = () => {
             {products.map((item) => (
               <SwiperSlide key={item.id} className="disbg relative w-full h-screen">
                 <div key={item.id} className="flex items-center h-full w-full bg-opacity-90 transition-all hover:shadow-sm">
-                    <div className="text-center px-6 lg:px-10 w-[70%]">
+                    <div className="text-center px-6 lg:px-10 w-full absolute sm:relative sm:w-[70%]">
                         <h1 className=" text-white leading-[30px] sm:leading-[60px] mb-6">
-                          <p className="text-xl sm:text-6xl capitalize my-5 text-slate-300"> Shop With Largest Discount Ever Now</p>
+                          <p className="text-3xl sm:text-6xl capitalize my-5 text-slate-100 font-bold"> Shop With Largest Discount Ever Now</p>
                             <span className="text-2xl sm:text-5xl text-green-400">{item.discount}% OFF</span> DISCOUNT
                         </h1>
                         <Link href={`/products/${item.hashed_id}`} onClick={() => redirect(`/products/${item.hashed_id}`)} className="bg-red-500 bg-opacity-75 px-3 sm:px-6 md:px-10 rounded-3xl py-2 md:py-3 hover:bg-red-400 text-white text-nowrap">

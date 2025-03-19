@@ -63,10 +63,17 @@ const NavBar = () => {
 
   // Calculate total cart items by summing up the amounts
   const totalCartItems = cartItems.reduce((acc, item) => acc + item.amount, 0);
-
+  const handleSearch =  (text: string, href: string) => {
+    if(text === "Search"){
+     setIsSearchOpen(!isSearchOpen);
+    }else{
+      redirect(href);
+    }
+  }
   const links = [
     { href: "/", icon: "bi-house", text: "Home" },
     { href: "/products", icon: "bi-bag", text: "Products" },
+    { href: "#", icon: "bi-search", text: "Search" },
     { href: "https://tailors.biafricantouch.com", icon: "bi-mortarboard", text: "Tailors Dream College" },
     /*{ href: "/stores", icon: "bi-shop", text: "Stores" }, */
     { href: "https://tailors.biafricantouch.com/contact-us", icon: "bi-phone", text: "Contact us" },
@@ -111,9 +118,7 @@ const NavBar = () => {
 
         {/* Contact, language, and cart */}
         <div className="flex items-center sm:space-x-4 space-x-3 w-1/2 justify-end text-[14px] sm:w-[33%] sm:justify-between sm:py-0">
-           <div className={`items-center rounded-[2px] px-2 sm:hidden`}>
-            <i className={`bi bi-${isSearchOpen ? 'x':'search'} text-2xl text-slate-600`} onClick={() => setIsSearchOpen(!isSearchOpen)} ></i>
-            </div>
+           
           <div className="text-[12px] font-[100] sm:flex hidden font-serif text-black sm:text-[15px]">
             <i className="bi bi-telephone text-lg text-slate-400"></i>
             <span className="ml-2 mt-1 mr-3 text-slate-600 ">+250788282252</span>
@@ -190,8 +195,8 @@ const NavBar = () => {
          <Link
           key={index}
           href={link.href}
-          onClick={() => redirect(link.href)}
-          className="text-[#000a] text-3xl mx-2 sm:mr-[20px] hover:text-orange-600 flex sm:text-[15px] flex-col text-center sm:flex-row"
+          onClick={() => handleSearch(link.text, link.href)}
+          className={`text-[#000a] ${link.text === "Search" ? 'sm:hidden': ''} text-3xl mx-2 sm:mr-[20px] hover:text-orange-600 flex sm:text-[15px] flex-col text-center sm:flex-row`}
           >
            <i className={`bi ${link.icon} mr-2`}></i>
            <span className="hidden sm:block md:flex lg:flex">{link.text}</span>
