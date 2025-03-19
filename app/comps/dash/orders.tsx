@@ -106,7 +106,7 @@ const Orders = () => {
     }
    
     return (
-        <div className="px-8 pb-4 max-h-[80vh] overflow-hidden overflow-y-visible">
+        <div className="sm:px-8 px-4 pb-4 max-h-[80vh] overflow-hidden overflow-y-visible">
             <h4 className="font-semibold text-sm mb-4 text-gray-700">My Orders</h4>
             {loading ? (
                 <p className="text-gray-500 text-sm text center p-8 w-full">Loading orders...</p>

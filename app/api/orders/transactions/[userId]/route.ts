@@ -70,7 +70,6 @@ export async function GET(req: Request, { params }: { params: { userId: string }
             flutter_response: row.flutter_response,
         }));
         
-        console.log(paymentDetails);
         return NextResponse.json({
             success: true,
             paymentDetails,

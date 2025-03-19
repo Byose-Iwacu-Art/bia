@@ -16,7 +16,7 @@ const Payments = () => {
     }, [router]); // Added `router` to dependency array
 
     return (
-        <div className="ml-[60px] sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
+        <div className="sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
             <head>
                 <title>My payments </title>
             </head>

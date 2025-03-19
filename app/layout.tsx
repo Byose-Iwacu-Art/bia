@@ -16,9 +16,12 @@ export default function RootLayout({
   const pathname = usePathname();
   const isDashLayout = pathname.startsWith("/dash");
   const isNoLayout = pathname.startsWith("/auth");
+  const [showSiderBar, setShowSideBar] = useState<string | any>(null);
 
   const [isLoading, setIsLoading] = useState(true); // Track loading state
-
+  const handleShow = (p: string) => {
+    setShowSideBar(p);
+  }
   useEffect(() => {
     // Ensure content is fully loaded (like DOM ready)
     const handleContentReady = () => {
@@ -48,8 +51,8 @@ export default function RootLayout({
           {/* Dash layout */}
         {isDashLayout ? (
           <div id="main-content">
-            <SideBar />
-            <Top />
+            <SideBar toggleButtonId={showSiderBar}/>
+            <Top onSidebarClick={handleShow}/>
             <div className="dash-content">{children}</div>
           </div>
         ) : isNoLayout ? (
@@ -62,7 +65,7 @@ export default function RootLayout({
           // Default layout
           <>
             <NavBar />
-            <main>
+            <main className="sm:mt-[120px] sm:mb-[20px] mt-[60px]">
               {/* Show Preloader while main content is loading */}
               <div className="relative">
                 {isLoading ? (

@@ -41,6 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, image, size, color,
     localStorage.setItem("cart", JSON.stringify(cart));
     setIsInCart(true); // Update the state to reflect the item is added
   };
+
   
   return (
     <div 
@@ -48,7 +49,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, image, size, color,
      onClick={() => window.location.assign(`/products/${hashed_id}`)}
     >
       <div className="w-full h-[140px] cursor-pointer  rounded-md">
-          <img className="w-full h-full object-contain" src={image} alt={name} />
+          <img className="w-full h-full object-contain" src={image || "/no_image.jpeg"} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
@@ -111,7 +112,7 @@ const FlashCard: React.FC<ProductCardProps> = ({ id, name, image, size, color, p
     >
       <div className="w-full h-[140px] cursor-pointer  rounded-md">
           <div className="absolute text-left bg-red-500 text-sm text-white flex items-center p-1 font-medium rounded">{"-"+size+"%"}</div>
-          <img className="w-full h-full object-contain" src={image} alt={name} />
+          <img className="w-full h-full object-contain" src={image} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">

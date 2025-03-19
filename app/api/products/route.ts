@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const size = searchParams.get("size") || "";
     const sort = searchParams.get("sortBy") || "";
 
-    let sql = "SELECT * FROM products";
+    let sql = "SELECT * FROM products WHERE status = 'Active' ";
     const params: (string | number)[] = [];
 
     // Filtering logic
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
 
     // Combine conditions if any
     if (conditions.length) {
-      sql += " WHERE status = 'Active' AND " + conditions.join(" AND ");
+      sql += " AND " + conditions.join(" AND ");
     }
 
     sql += " ORDER BY id DESC";

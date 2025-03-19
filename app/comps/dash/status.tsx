@@ -7,6 +7,13 @@ interface Status {
     deliveredOrders: number;
     totalInboxes: number;
 }
+const formatNumber = (amount: number | any, decimals: number): string => {
+    return new Intl.NumberFormat("en-US", {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+    }).format(amount);
+  };
+  
 
 const Status = () => {
     const [status, setStatus] = useState<Status | null>(null);
@@ -67,33 +74,33 @@ const Status = () => {
     }
 
     return (
-        <div className="p-8">
+        <div className="sm:px-8 py-8 px-4">
             <h4 className="m-1 font-semibold">Statistics</h4>
-            <div className="flex justify-between items-center gap-4 flex-grow flex-wrap">
+            <div className="sm:flex grid grid-cols-2 sm:justify-between items-center gap-4 sm:flex-grow sm:flex-wrap">
                 <div className="box bg-white p-4 m-2 text-center rounded-md">
                     <i className="bi bi-bag text-4xl text-green-300"></i>
-                    <div className="count text-2xl font-semibold">{status.totalOrders}</div>
+                    <div className="count text-2xl font-semibold">{formatNumber(status.totalOrders, 0)}</div>
                     <span className="text-sm text-slate-400">Total Orders</span>
                 </div>
                 <div className="box bg-white p-4 m-2 text-center rounded-md">
                     <i className="bi bi-cart-plus text-4xl text-orange-300"></i>
-                    <div className="count text-2xl font-semibold">{status.pendingOrders}</div>
+                    <div className="count text-2xl font-semibold">{formatNumber(status.pendingOrders, 0)}</div>
                     <span className="text-sm text-slate-400">Pending Orders</span>
                 </div>
                 <div className="box bg-white p-4 m-2 text-center rounded-md">
                     <i className="bi bi-truck text-4xl text-red-300"></i>
-                    <div className="count text-2xl font-semibold">{status.deliveredOrders}</div>
+                    <div className="count text-2xl font-semibold">{formatNumber(status.deliveredOrders, 0)}</div>
                     <span className="text-sm text-slate-400">Delivered Orders</span>
                 </div>
                 <div className="box bg-white p-4 m-2 text-center rounded-md">
                     <i className="bi bi-credit-card text-4xl text-green-300"></i>
-                    <div className="count text-2xl font-semibold">{status.totalPayments}<span className="text-xs text-slate-800 ml-[1px]">RWF</span> </div>
+                    <div className="count text-2xl font-semibold">{formatNumber(status.totalPayments, 2)}<span className="text-xs text-slate-800 ml-[1px]">RWF</span> </div>
                     <span className="text-sm text-slate-400">Total Payments</span>
                 </div>
                 <div className="box bg-white p-4 m-2 text-center rounded-md">
-                    <i className="bi bi-chat-dots text-4xl text-orange-300"></i>
-                    <div className="count text-2xl font-semibold">{status.totalInboxes}</div>
-                    <span className="text-sm text-slate-400">Messages</span>
+                    <i className="bi bi-receipt text-4xl text-orange-300"></i>
+                    <div className="count text-2xl font-semibold">{formatNumber(status.totalInboxes, 0)}</div>
+                    <span className="text-sm text-slate-400">Unpaid Invoices</span>
                 </div>
             </div>
         </div>

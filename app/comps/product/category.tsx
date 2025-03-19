@@ -98,7 +98,7 @@ const Category: React.FC = () => {
     {categoriez.map((cat,key) => (
      <div key={key} className="flex flex-col bg-white p-2 shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-80">
      <div className="w-full h-20 mb-2">
-       <img src={cat.avatar} alt={cat.cat_name} className='w-full h-full object-contain rounded-lg' />
+       <img src={cat.avatar} alt={""} className='w-full h-full object-contain rounded-lg' />
      </div>
      <Link href={`/products/category/${cat.cat_name}`} onClick={() => window.location.assign(`/products/category/${cat.cat_name}`)} className='flex flex-col'>
        <div className="name text-black text-sm md:text-base font-semibold truncate">{cat.cat_name}</div>

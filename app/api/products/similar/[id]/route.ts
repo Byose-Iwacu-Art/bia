@@ -19,13 +19,13 @@ export async function GET(req: Request, { params }: { params: { id: number } }) 
         result = await client.query(
             `SELECT id, name, price, category, image, hashed_id 
              FROM products 
-             WHERE category ILIKE '%' || $1 || '%' 
+             WHERE category = $1 
              AND id != $2`, [category, id]
         );
 
         // 2. If no products are found by category, search by price
-        if (result.rows.length <= 0) {
-            const priceRange = 0.2; // Define price range e.g., 20% range
+        if (result.rows.length < 12) {
+            const priceRange = 0.8; // Define price range e.g., 20% range
             result = await client.query(
                 `SELECT id, name, price, category, image, hashed_id 
                  FROM products 
@@ -36,11 +36,11 @@ export async function GET(req: Request, { params }: { params: { id: number } }) 
         }
 
         // 3. If no products are found by price, search by name similarity
-        if (result.rows.length <= 0) {
+        if (result.rows.length < 12) {
             result = await client.query(
                 `SELECT id, name, price, category, image, hashed_id 
                  FROM products 
-                 WHERE name ILIKE '%' || $1 || '%'
+                 WHERE name ILIKE '%' || $1 || '%' OR  description ILIKE '%' || $1 || '%' 
                  AND id != $2`, [name, id]
             );
         }

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from "../db";
 import { sendOrderPaymentsEmail } from "../utils/config";
+import { sendInvoice } from "../utils/invoice";
 const Flutterwave = require("flutterwave-node-v3");
 
 // Helper function to hash the password using SHA-256
@@ -97,8 +98,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (!client) {
         throw new Error("Database client is not initialized.");
       }
-
+      const invoice = `INSERT INTO invoices (user_id, order_number, transaction_id, status, created_at) VALUES(
+      $1, $2, $3, $4, $5)`;
       const result = await client.query(insertUserSql, insertValues);
+      await client.query(invoice, [Number(user_id), Number(orderNumber), transaction_id, "Unpaid", created_at]);
+      await sendInvoice(email, status, name, orderNumber, amount, "");
       await sendOrderPaymentsEmail(email, status, name, orderNumber, amount, message);
       return NextResponse.json(
         {

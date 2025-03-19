@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Orders from "../../comps/dash/orders";
 import { useRouter } from 'next/navigation';
+import Transactions from "@/app/comps/dash/payments";
 
-const Dashboard = () => {
+const Payments = () => {
     const router = useRouter();
 
     useEffect(() => {
@@ -16,13 +16,13 @@ const Dashboard = () => {
     }, [router]); // Added `router` to dependency array
 
     return (
-        <>
-        <title>Orders</title>
         <div className="sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
-            <Orders />
+            <head>
+                <title>Invoices </title>
+            </head>
+            <Transactions />
         </div>
-        </>
     );
 };
 
-export default Dashboard;
+export default Payments;

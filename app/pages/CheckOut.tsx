@@ -38,12 +38,8 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(true);
-  const [errorType, setErrorType] = useState<any>(null);
-  const [message, setMessage] = useState<string>("");
+  const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
-  const router = useRouter();
 
   const handleOpenPayment = () => {
       setIsPayModalOpen(true);
@@ -52,6 +48,17 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
   const handleClosePayment = () => {
       setIsPayModalOpen(false);
   };
+   // Function to clear messages after a few seconds
+ useEffect(() => {
+  if (error || success) {
+    const timer = setTimeout(() => {
+      setError(null);
+      setSuccess(null);
+    }, 10000); // Hide after 4 seconds
+    return () => clearTimeout(timer);
+  }
+}, [error, success]);
+
   useEffect(() => {
     const storedCartItems = localStorage.getItem('cart');
     if (storedCartItems) {
@@ -103,14 +110,9 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
           const response = await fetch(`/api/auth/user/${userId}`);
           const data = await response.json();
           setUser(data);  // Directly set the user data
-          setMessage("Click check out to place order!")
-          setErrorType("success");
-          setSuccess(true);
         } catch (error) {
           console.error("Error fetching user data:", error);
-          setMessage("Error occured. Please try again");
-          setErrorType("error");
-          setSuccess(true);
+          setError("Error occured: "+error);
         }
       };
 
@@ -140,17 +142,13 @@ const handleCheckout = async () => {
   const userId = userSession.id;
   setLoading(true);
   if (!user) {
-    setSuccess(true);
-    setMessage("Your login session has expired! Sign in to proceed with checkout.");
-    setErrorType("info");
+    setError("Your login session has expired! Sign in to proceed with checkout.");
     setLoading(false)
     return;
   }
 
-  if(user.billingaddress === ""){
-    setSuccess(true);
-    setMessage("Please add billing address");
-    setErrorType("info");
+  if(user.billingaddress === "" || !user.billingaddress){
+    setError("Please add billing address");
      return;
   }
 
@@ -190,15 +188,13 @@ const handleCheckout = async () => {
 
     if (response.ok) {
           setOrderAdd(true);
-          setMessage("Order added successfully")
-          setErrorType("success");
+          setSuccess("Order added successfully")
       const data = await response.json();
       setOrderNumber(data.order.order_number);
       setLoading(false)
     } else {
       const errorData = await response.json(); // Get the error message from the response
-      setMessage("Error occured. "+errorData.message);
-      setErrorType("error")
+      setError("Error occured. "+errorData.message);
       setLoading(false);
     }
 
@@ -212,13 +208,12 @@ const handleCheckout = async () => {
         if (response.ok) {console.log("Notification sent!")}
         setError(null);
       } catch (error) {
-        setMessage("Error occured. Please try again");
-        setErrorType("error")
+        setError("Error occured: "+error);
       }
     }
   } catch (error) {
    console.error("Error placing order:", error);
-   setMessage("Error occured. Please try again"+error)
+   setError("Error occured: "+error)
    setLoading(false);
   }
 };
@@ -237,18 +232,10 @@ const handleButtonClick = async () => {
     setError(""+error);
    }
   } else {
-    setMessage("Please add products to your cart to be able to place order");
-    setErrorType("info");
+    setError("Please add products to your cart to be able to place order");
   }
 };
-  useEffect(()=>{
-    if(message !== "" && errorType !== null){
-      setSuccess(true);
-      setTimeout(() => {setSuccess(false)}, 5000)
-    }else{
-      setSuccess(false);
-    }
-  },[success])
+  
   return  (
     <div className="bg-slate-100 min-h-screen">
       <div className="checkout-page mx-auto px-4 sm:px-8 py-4">
@@ -437,12 +424,7 @@ const handleButtonClick = async () => {
                 <span className="text-gray-300">Payment Method:</span>
                 <span className="text-sky-500 font-semibold">{selectedPayment}</span>
             </div>
-             {/* Response Message */}
-             {success && (
-                    <div className={`px-4 py-2 text-sm rounded-lg text-white ${errorType === 'success' ? 'bg-green-400' : errorType === 'error' ? 'bg-red-400' : 'bg-yellow-400'}`}>
-                        <p>{message}</p>
-                    </div>
-                )}
+            
             <button 
              onClick={handleButtonClick}
              className="mt-4 w-full bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-red-400 transition flex justify-center items-center"
@@ -457,9 +439,8 @@ const handleButtonClick = async () => {
         </div>
       </div>
 
-      {success &&( 
-        <AlertNotification message={message} type={errorType} />
-      )}
+      {success && (<AlertNotification message={success} type="success" />)}
+      {error && (<AlertNotification message={error} type="error" />)}
 
       {isPayModalOpen && (
       <Pay 

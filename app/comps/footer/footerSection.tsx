@@ -6,13 +6,13 @@ const FooterSection = () => {
     
     <div className="flex flex-col sm:flex-row px-4 justify-between">
       <div className="logo w-full sm:w-1/3">
-        <div className="w-full flex justify-self-center sm:justify-self-start">
-          <img src="/imgs/logo.ico" alt="" className="w-[30vw] h-[30vh] object-contain"/>
+        <div className="w-full h-full sm:w-[40vw] sm:h-[30vh] flex justify-self-center sm:justify-self-start">
+          <img src="/imgs/logo.ico" alt="" className="w-full h-full object-contain"/>
         </div>
       </div>
-      <div className="services w-full sm:w-[42%]">
+      <div className="services w-full sm:w-[40%]">
          <h4 className="text-3xl my-3  text-slate-950 text-nowrap">Byose Iwacu Art</h4>
-         <div className="slides grid grid-cols-3 gap-3 justify-between">
+         <div className="slides flex items-center gap-3 justify-between">
             <div className="mr-1 my-2">
               <h3 className="text-base text-teal-600 my-2 font-medium">About us</h3>
                <ul className="space-y-2 mx-1">

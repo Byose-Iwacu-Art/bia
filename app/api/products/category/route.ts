@@ -4,7 +4,7 @@ import client from '../../db'; // Adjust the path to your database client
 
 export async function GET() {
     try {
-        const sql = "SELECT * FROM categories ORDER BY products DESC";
+        const sql = "SELECT * FROM categories WHERE products > 0 ORDER BY products DESC";
         const result = await client.query(sql);
 
         // Return products as JSON

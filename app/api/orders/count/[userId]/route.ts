@@ -5,7 +5,7 @@ export async function GET(req: Request, { params }: { params: { userId: string }
     const { userId } = params;
 
     if (!userId) {
-        return NextResponse.json({ message: 'User ID is required' }, { status: 400 });
+        return NextResponse.json({ message: 'User ID is required' }, { status: 403 });
     }
 
     try {
@@ -21,7 +21,7 @@ export async function GET(req: Request, { params }: { params: { userId: string }
             SELECT 
     COALESCE(SUM(p.amount::NUMERIC), 0) AS total_payments
 FROM payments p
-WHERE p.user_id = $1;
+WHERE p.user_id = $1 AND p.status = 'Paid';
 
         `;
 

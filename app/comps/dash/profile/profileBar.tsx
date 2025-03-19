@@ -33,7 +33,7 @@ const ProfileBar = () => {
             onClick={() => handleLinkClick(link.href)}
           >
             <i className={`bi ${link.icon} text-base sm:text-lg mr-5 bg-slate-50 px-2 py-1 rounded-full`}></i>
-            <span className="hidden text-sm sm:inline">
+            <span className="text-sm">
               <h4 className="text-gray-700 font-semibold">{link.text}</h4>
               <span className="text-xs text-slate-400">{link.desc}</span>
             </span>

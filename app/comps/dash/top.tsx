@@ -14,7 +14,7 @@ interface CartItem {
   }
   
 
-const Top = () =>{
+const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }) => {
       const [isHidden, setIsHidden] = useState(false);
       const [userInitials, setUserInitials] = useState<string | null>(null);
       const [isOpen, setIsOpen] = useState(false);
@@ -60,19 +60,25 @@ const Top = () =>{
         // Calculate total cart items by summing up the amounts
         const totalCartItems = cartItems.reduce((acc, item) => acc + item.amount, 0);
     return (
-        <div className="fixed bg-white ml-[70px] sm:ml-[200px] top-0 z-40 w-full" style={{ width: "calc(100% - 200px)" }}>
-            <div className="flex justify-between p-5 items-center w-full">
+        <div className="z-30 fixed top-0 bg-white sm:ml-[200px] dashbar">
+            <div className="flex justify-between px-5 shadow-sm py-2 items-center w-full ">
+                <div className="flex items-center space-x-4">
+                <button id="menuToggle" className="sm:hidden inline" onClick={() => onSidebarClick("menuToggle")}>
+                  <i className="bi bi-list text-2xl"></i>
+                </button>
+
                 <Link href={"/"} onClick={() => window.location.assign("/")} className="text-sm text-slate-500">
                 <i className="bi bi-chevron-left mr-1"></i>
-                 <span className="hidden sm:inline">Back to Home</span>
+                 <span className="inline">Back</span>
                 </Link>
+                </div>
                 <div className="flex items-center justify-around w-[60vw] sm:w-auto space-x-5">
                     <div className="flex mx-2 p-1 text-slate-500">
-                        <i className="bi bi-chat-dots text-xl"></i>
+                        <i className="bi bi-chat-dots text-2xl"></i>
                         <span className="absolute w-4 h-4 text-center bg-red-400 text-white rounded-full ml-3 text-[10px]">5</span>
                     </div>
                     <div className="flex mx-2 p-1 text-slate-500">
-                        <i className="bi bi-bell text-xl"></i>
+                        <i className="bi bi-bell text-2xl"></i>
                         <span className="absolute w-4 h-4 text-center bg-red-400 text-white rounded-full ml-3 text-[10px]">5</span>
                     </div>
 

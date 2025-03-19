@@ -58,7 +58,7 @@ const Similar = ({ id }: { id: string }) => {
     if (error) {
         return <div className="text-center text-red-500 py-6">{error}</div>;
     }
-      
+    
     return (
         <>
             <h1 className="font-semibold text-2xl text-slate-500 pb-3">Similar products</h1>

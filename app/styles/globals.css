@@ -6,10 +6,6 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
 }
 
-main{
-    margin-bottom: 20px;
-    margin-top: 140px;
-}
 .slidebg{
   background: linear-gradient(180deg, #f2fbfa77, #bfbfbfc0, #013a20a1);
 }
@@ -223,6 +219,9 @@ footer .container {
     .back-to-top:hover {
       background-color: #f89e9e;
     }
+    .dashbar{
+       width: calc(100% - 200px);
+    }
     
     @media (max-width: 640px) {
       .box {
@@ -266,26 +265,28 @@ footer .container {
         position: fixed;
         bottom: 0;
         width: 100%;
-        background-color: #f87171;
+        background-color: white;
         z-index: 1000;
-        border-top: 1px solid #ffc4b0;
-        padding: 0;
+        border-top: 1px solid #b0fff4;
+        padding: 10px 15px;
         display: flex;
         align-items: center;
       }
-    
+      .dashbar{
+        width: 100%;
+     }
       .small-device-menu a {
         flex: 1;
         text-align: center;
         color: #000;
         font-size: 14px;
-        padding: 10px 0;
+        padding: 5px 0;
       }
     
       .small-device-menu i {
         display: block;
-        font-size: 23px;
-        color: #dddddd;
+        font-size: 30px;
+        color: #ef4444;
       }
     
       .small-device-menu span {

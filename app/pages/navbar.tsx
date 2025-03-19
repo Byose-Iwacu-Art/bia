@@ -22,6 +22,7 @@ const NavBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   const router = useRouter()
   // Load initial cart items and user session
@@ -68,7 +69,7 @@ const NavBar = () => {
     { href: "/products", icon: "bi-bag", text: "Products" },
     { href: "https://tailors.biafricantouch.com", icon: "bi-mortarboard", text: "Tailors Dream College" },
     /*{ href: "/stores", icon: "bi-shop", text: "Stores" }, */
-    { href: "https://tailors.biafricantouch.com/contact-us", icon: "bi-telephone", text: "Contact us" },
+    { href: "https://tailors.biafricantouch.com/contact-us", icon: "bi-phone", text: "Contact us" },
   ];
 
   return (
@@ -81,9 +82,9 @@ const NavBar = () => {
       {/*
       <WarningPopup message="This platform is still under development ... We promise to be back soon" />
         Navigation */}
-      <nav className="flex justify-start items-center px-2 flex-col-reverse sm:flex-row sm:justify-between sm:pb-0 sm:px-10" >
+      <nav className="flex items-center space-x-9 sm:justify-between px-3 " >
         {/* Logo and search bar */}
-        <div className="flex items-center justify-between w-full py-1 sm:w-3/6 sm:justify-between" onClick={() => setIsCartOpen(false)}>
+        <div className="flex items-center space-x-5 w-1/2 py-2" onClick={() => setIsCartOpen(false)}>
           <div>
             <Image
               src="/imgs/logo.ico"
@@ -92,41 +93,46 @@ const NavBar = () => {
               height={50}
             />
           </div>
-          <form action={'/search'} method="get" className="flex sm:shadow rounded-[2px] sm:rounded w-[70%] mx-2 border border-slate-200 h-min mt-1 sm:w-[80%] sm:border-0">
+            {/* Button for Mobile */}
+           
+          <form action={'/search'} method="get" className={`sm:flex ${isSearchOpen ? 'flex fixed left-0 mt-[30%] backdrop-blur-xl w-[90%] justify-between items-center z-50' : 'hidden'} bg-red-100 px-4 py-1 rounded sm:w-full space-x-4`}>
             <input 
               type="search" 
               name="q" 
               id="q" 
               placeholder="Search product, store, category, ..."
-              className="px-[15px] py-1 w-full bg-transparent text-xs outline-none placeholder:text-slate-400"
+              className="text-sm outline-none placeholder:text-slate-400 w-full py-2 px-5 rounded-full"
             />
-            <button type="submit" className="bg-red-400 h-full gap-4 py-[7px] px-1 sm:py-[10px]">
-              <i id="searchBtn" className="bi bi-search px-[16px] cursor-pointer text-[15px] text-white"></i>
+            <button type="submit" className="">
+              <i id="searchBtn" className="bi bi-search cursor-pointer text-white"></i>
             </button>
           </form>
         </div>
 
         {/* Contact, language, and cart */}
-        <div className="flex items-center justify-around w-full text-[14px] sm:w-[33%] sm:justify-between sm:py-0">
-          <div className="text-[12px] font-[100] font-serif text-black sm:text-[15px]">
+        <div className="flex items-center sm:space-x-4 space-x-3 w-1/2 justify-end text-[14px] sm:w-[33%] sm:justify-between sm:py-0">
+           <div className={`items-center rounded-[2px] px-2 sm:hidden`}>
+            <i className={`bi bi-${isSearchOpen ? 'x':'search'} text-2xl text-slate-600`} onClick={() => setIsSearchOpen(!isSearchOpen)} ></i>
+            </div>
+          <div className="text-[12px] font-[100] sm:flex hidden font-serif text-black sm:text-[15px]">
             <i className="bi bi-telephone text-lg text-slate-400"></i>
             <span className="ml-2 mt-1 mr-3 text-slate-600 ">+250788282252</span>
           </div>
           <div>
-            <div className="flex items-center rounded-[2px] px-2">
-              <i className="bi bi-globe text-lg text-slate-400"></i>
-              <select name="" id="lang" className="p-[5px] outline-none text-slate-600" disabled={true}>
+           <div className="flex items-center rounded-[2px] px-2">
+              <i className="bi bi-globe text-xl text-slate-400"></i>
+              <select name="" id="lang" className="p-[5px] outline-none text-slate-700 bg-transparent" disabled={true}>
                 <option value="">English</option>
                 <option value="">Kiny</option>
                 <option value="">French</option>
               </select>
             </div>
           </div>
-          
+           
           {/* Cart with item count */}
           <div className="relative mx-2">
             <div onClick={() => setIsCartOpen(!isCartOpen)} className="cursor-pointer relative">
-              <i className="bi bi-cart text-2xl text-gray-800"></i>
+              <i className="bi bi-cart sm:text-2xl text-3xl text-gray-800"></i>
               {totalCartItems > 0 && (
                 <span className="absolute mt-[-3px] mr-[-3px] top-0 right-0 bg-red-500 text-white px-[5px] rounded-full text-[12px]">
                   {totalCartItems}
@@ -165,7 +171,7 @@ const NavBar = () => {
                 )}
               </div>
             ) : (
-              <Link href="/auth/login" onClick={() => redirect("/auth/login")} className="flex bg-slate-200 py-1 px-5 rounded-lg text-base">
+              <Link href="/auth/login" onClick={() => redirect("/auth/login")} className="flex bg-slate-200 py-1 px-5 rounded-lg text-base text-nowrap">
                 Sign in
               </Link>
             )}
@@ -175,12 +181,9 @@ const NavBar = () => {
         </div>
       </nav>
 
-      <menu className={`flex justify-between pb-1 pl-[25px] transition-transform duration-500 ${isHidden ? 'fixed -translate-y-full opacity-0' : 'opacity-100 -translate-y-0'} w-full small-device-menu`}>
+      <menu className={`flex justify-between pb-2 pl-[25px] transition-transform duration-500 ${isHidden ? 'fixed -translate-y-full opacity-0' : 'opacity-100 -translate-y-0'} w-full small-device-menu`}>
         <div className="hidden sm:flex">
-          <span className="text-[#000a] hidden">
-           <i className="bi bi-grid"></i>
-           <span>MENU</span>
-          </span>
+          
         </div>
         <div className="flex justify-end w-full">
         {links.map((link, index) => (
@@ -188,7 +191,7 @@ const NavBar = () => {
           key={index}
           href={link.href}
           onClick={() => redirect(link.href)}
-          className="text-[#000a] text-[30px] mx-2 sm:mr-[20px] hover:text-orange-600 flex sm:text-[15px] flex-col text-center sm:flex-row"
+          className="text-[#000a] text-3xl mx-2 sm:mr-[20px] hover:text-orange-600 flex sm:text-[15px] flex-col text-center sm:flex-row"
           >
            <i className={`bi ${link.icon} mr-2`}></i>
            <span className="hidden sm:block md:flex lg:flex">{link.text}</span>

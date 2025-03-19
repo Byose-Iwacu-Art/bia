@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import AlertNotification from "../nav/notify";
-import { redirect } from "next/navigation";
 
 interface PayProps {
     orderNumber: string;
@@ -39,6 +38,15 @@ const Pay: React.FC<PayProps> = ({
     if(account[2] !== "5"){
         account = "+250"+account;
     }
+     // Function to clear messages after a few seconds
+   useEffect(() => {
+    if (responseMessage) {
+      const timer = setTimeout(() => {
+        setResponseMessage(null);
+      }, 10000); // Hide after 4 seconds
+      return () => clearTimeout(timer);
+    }
+  }, [responseMessage]);
       // Clear the cart
   const clearCart = () => {
     localStorage.removeItem('cart'); // Clear from localStorage
@@ -160,14 +168,14 @@ const Pay: React.FC<PayProps> = ({
                 {/* Proceed Payment Button */}
                 <button
                     onClick={handlePayment}
-                    className="w-full py-3 px-6 bg-pink-500 text-white font-semibold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300"
+                    className="flex justify-center items-centerw-full py-3 px-6 bg-pink-500 text-white font-semibold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300"
                     disabled={loading}
                 >
-              {loading ? (
-                <span className="loader border-t-2 border-r-2 border-white border-solid rounded-full h-5 w-5 animate-spin"></span>
-              ) : (
-                "Proceed to pay"
+              {loading && (
+                <div className="w-5 h-5 border-2 mr-2 border-white border-dashed rounded-full animate-spin"></div>    
               )}
+                Proceed to pay
+              
                 </button>
             </div>
         </div>

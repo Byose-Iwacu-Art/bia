@@ -70,15 +70,15 @@ const Order = ({ params }: { params: { orderNumber: string } }) => {
   }
   
   return (
-    <div className="ml-[60px] sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
+    <div className="sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
       <head>
         <title>Order Details </title>
       </head>
-      <div className="px-8 pb-4">
+      <div className="sm:px-8 px-4 pb-4">
         <h4 className="font-semibold text-sm mb-4 text-gray-700">Order Detail #{order.orderNumber}</h4>
-        <div className="flex justify-between">
+        <div className="sm:flex justify-between">
           {/* Order Items */}
-          <div className="overflow-x-auto bg-white rounded-md p-4 w-[55vw]">
+          <div className="overflow-x-auto bg-white rounded-md p-4 my-2 w-full sm:w-[55vw]">
             <div className="head">
               <h4 className="font-semibold text-sm mb-4 text-gray-700">Order Items</h4>
             </div>
@@ -117,7 +117,7 @@ const Order = ({ params }: { params: { orderNumber: string } }) => {
           </div>
 
           {/* Order Summary */}
-          <div className="rounded-lg bg-white p-5 space-y-2 w-[23vw] h-max">
+          <div className="rounded-lg bg-white p-5 space-y-2 w-full sm:w-[23vw] h-max">
             <h4 className="font-semibold text-sm mb-4 text-gray-700">Order Summary</h4>
             <div>
               <ul className="space-y-3">
