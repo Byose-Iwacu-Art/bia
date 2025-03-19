@@ -141,7 +141,7 @@ const Item = ({ product }: ItemProps) => {
 
     return (
         <>
-            <div className="title font-bold capitalize text-slate-500 text-sm flex px-6 mx-2 pt-3  mt-4">
+            <div className="title font-bold capitalize text-slate-500 text-sm flex px-3 sm:px-6 sm:mx-2 pt-3  mt-4 text-nowrap max-w-[90%] overflow-hidden">
              <h1>Products</h1>
              <span className='mx-1  bi bi-dot'></span>
              <h1>{product.category}</h1>
