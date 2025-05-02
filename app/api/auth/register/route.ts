@@ -60,7 +60,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const result = await client.query(insertUserSql, insertValues);
 
         await sendAccountCreationEmail(email, firstName+" "+lastName);
-        const deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+       
+        let deviceInfo = 'unknown device';
+        if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+          deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+        }
         
         const message = `Welcome to BIA The African touch. Your account has been successfully created at ${(new Date()).toLocaleString()} from device: ${deviceInfo}. \nPlease verify your account. \nEnjoy the home of made in Rwanda fashions and craftsmanship`;
         

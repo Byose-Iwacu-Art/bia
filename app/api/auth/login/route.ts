@@ -43,7 +43,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const insertSql = "INSERT INTO sessions (user_id, session_id) VALUES ($1, $2) RETURNING *";
         await client.query(insertSql, [user.id, sessionId]);
 
-        const deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+        let deviceInfo = 'unknown device';
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+  deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+}
         const message = `New login detected at ${(new Date()).toLocaleString()} from device: ${deviceInfo}. \nIf it was not you please change password`;
         
         const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;

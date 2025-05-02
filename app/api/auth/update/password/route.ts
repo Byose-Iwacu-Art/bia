@@ -45,7 +45,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         if (updateResult.rowCount === 0) {
             return NextResponse.json({ message: "Failed to update profile." }, { status: 500 });
         }
-        const deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+        let deviceInfo = 'unknown device';
+if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+  deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+}
         const message = `Your password has been changed. Done at${(new Date()).toLocaleString()} from device: ${deviceInfo}. \nIf it was not you please let's know at support@biafricantouch.com`;
         
         const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;
