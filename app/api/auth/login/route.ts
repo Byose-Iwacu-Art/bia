@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from '../../db';
 import crypto from 'crypto';
+import { sendActivityEmail } from "../../utils/config";
 
 // Helper function to hash the password using SHA-256
 async function hashPassword(password: string): Promise<string> {
@@ -42,6 +43,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const insertSql = "INSERT INTO sessions (user_id, session_id) VALUES ($1, $2) RETURNING *";
         await client.query(insertSql, [user.id, sessionId]);
 
+        const deviceInfo = `${navigator.platform}, ${navigator.userAgent}`;
+        const message = `New login detected at ${(new Date()).toLocaleString()} from device: ${deviceInfo}. \nIf it was not you please change password`;
+        
+        const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;
+        await client.query(notification, [message, user.id, "Security and Privacy", "true", "Unread", `/dash/profile`, "Unread"])
+
+        await sendActivityEmail(user.email, user.name, message);
         // Send response with user data and session ID
         return NextResponse.json({
             message: "Login successful!",

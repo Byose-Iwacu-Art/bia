@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -116,18 +115,22 @@ export default function Payments({ params }: { params: { tid: string } }) {
       console.error("Form submission failed:", error);
     }
   };
-
   return (
     <>
+
       <head>
         <title>Checkout Payment Results</title>
       </head>
+      
       <div className="fixed flex justify-center items-center w-full h-full top-0 left-0 z-50 backdrop-blur-sm bg-opacity-50">
-          <div className="bg-white px-8 py-5 w-[96%] max-w-[500px] md:w-[35vw] h-auto shadow-2xl flex flex-col space-y-3">
+          {!resp ? (
+            <div className="text-red-500">404 - Invalid request</div>
+          ): (
+        <div className="bg-white px-8 py-5 w-[96%] max-w-[500px] md:w-[35vw] h-auto shadow-2xl flex flex-col space-y-3">
 
           {/* Payment details */}
           <div className="flex flex-col items-center space-y-4">
-            <h2 className="text-3xl font-bold">Payments Results</h2>
+            <h2 className="text-2xl font-semibold">Payments Results</h2>
             {/* Response Message */}
             {responseMessage && (
               <div
@@ -145,11 +148,13 @@ export default function Payments({ params }: { params: { tid: string } }) {
           {/* Proceed Payment Button */}
           <Link
             href={`/dash/orders/${b}`}
-            className="w-full py-3 px-6 text-center bg-teal-500 font-semibold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300"
+            onClick={() => window.location.assign(`/dash/orders/${b}`)}
+            className="w-full py-2 px-4 text-white text-center bg-teal-500 font-semibold rounded-lg shadow-lg hover:bg-pink-700 transition duration-300"
           >
             Go back <i className="bi bi-left-arrow"></i>
           </Link>
         </div>
+        )}
       </div>
     </>
   );

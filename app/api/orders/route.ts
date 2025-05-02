@@ -1,34 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import client from '../db';
-import { sendOrderPlacementEmail } from '../utils/config';
+import { sendInvoice } from '../utils/invoice';
 
-function generateUniqueId() {
-    const min = 100000; // Minimum value (6 digits)
-    const max = 999999; // Maximum value (6 digits)
-  
-    // Generate a random number between min and max
-    const randomId = Math.floor(Math.random() * (max - min + 1)) + min;
-  
-    return randomId;
-  }
-  function formatDate(dateString: any) {
-    // Convert the string to a Date object
-    const date = new Date(dateString);
-  
-    // Array of month names
-    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  
-    // Extract parts of the date
-    const year = date.getFullYear();
-    const month = months[date.getMonth()];
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-  
-    // Construct the formatted date
-    return `${month}, ${day} ${year} ${hours}:${minutes}:${seconds}`;
-  }
+async function generateCode(): Promise<string> {
+
+    const result = await client.query("SELECT COUNT(*) FROM orders");
+    const count = parseInt(result.rows[0].count, 10) + 1;
+    const formattedCount = count.toString().padStart(3, "0");
+    
+    return `${formattedCount}`;
+}
+
 export async function POST(req: NextRequest) {
   // Extract JSON body
   const {
@@ -36,6 +18,7 @@ export async function POST(req: NextRequest) {
     payment_method,
     total_mount,
     delivery_allowed,
+    details,
     billing_address,
     shipping_address,
     shipping_fee,
@@ -44,7 +27,7 @@ export async function POST(req: NextRequest) {
     email, 
     name,
   } = await req.json();
-  const uinumber = generateUniqueId();
+  const uinumber = await generateCode();
 
   // Input validation: Check that the necessary fields are provided
   if (!user_id || !payment_method || !total_mount || !delivery_allowed || !billing_address) {
@@ -57,8 +40,8 @@ export async function POST(req: NextRequest) {
 
     // Insert order and retrieve its ID
     const orderResult = await client.query(
-      `INSERT INTO orders (user_id, payment_method, total_amount, delivery_allowed, billing_address, shipping_address, shipping_fee, discount, order_number)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      `INSERT INTO orders (user_id, payment_method, total_amount, delivery_allowed, billing_address, shipping_address, shipping_fee, discount, order_number, details)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
       [
         user_id,
         payment_method,
@@ -69,12 +52,11 @@ export async function POST(req: NextRequest) {
         shipping_fee,
         discount,
         uinumber,
+        details,
       ]
     );
     const order_id = orderResult.rows[0].order_id;
 
-    const dateString = new Date()
-    const time_date: any = formatDate(dateString);
     // Insert order details into orderdetails table
     const orderDetailPromises = orderDetails.map((detail: any) =>
       client.query(
@@ -96,8 +78,15 @@ export async function POST(req: NextRequest) {
     await client.query("COMMIT");
     let d = "";
     delivery_allowed ? d = "1 day to be delivered!" : d = "Delivery not allowed"; 
+
+    const message = `Order with reference ${orderResult.rows[0].order_number} has been placed. Please process the payment to continue!`
+
+    const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;
+    await client.query(notification, [message, user_id, "Order", "true", "Unread", `/dash/orders/${orderResult.rows[0].order_number}`, "Unread"])
+    
     //send placement email
-    await sendOrderPlacementEmail(email, name, uinumber.toString(), orderDetails.length, d, time_date, total_mount);
+    await sendInvoice(email, orderDetails, name, uinumber.toString(), total_mount);
+
 
     // Send success response
     return NextResponse.json({ message: "Order saved successfully!", order: orderResult.rows[0] }, { status: 200 });

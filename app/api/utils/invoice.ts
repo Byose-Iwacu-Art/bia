@@ -3,16 +3,34 @@ const brevo = require('@getbrevo/brevo');
 let apiInstance = new brevo.TransactionalEmailsApi();
 
 
+function formatDate(dateString: any) {
+    // Convert the string to a Date object
+    const date = new Date(dateString);
+  
+    // Array of month names
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  
+    // Extract parts of the date
+    const year = date.getFullYear();
+    const month = months[date.getMonth()];
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+  
+    // Construct the formatted date
+    return `${month}, ${day} ${year} ${hours}:${minutes}:${seconds}`;
+  }
 
 // Function to send verification email
-export async function sendInvoice( email: string, payment_status: string, name: string, order_number: string, amount: string, message: string): Promise<void> {
+export async function sendInvoice( email: string, products: any, name: string, order_number: string, amount: string): Promise<void> {
 
   let apiKey = apiInstance.authentications['apiKey'];
   apiKey.apiKey = process.env.BREVO_API_KEY;
   
   let sendSmtpEmail = new brevo.SendSmtpEmail();
   
-  sendSmtpEmail.subject = "Order Confirmation Invoice - BIA The African Touch";
+  sendSmtpEmail.subject = "New Order Placement and Confirmation details - BIA The African Touch";
   sendSmtpEmail.htmlContent = `
 <html>
 <head>
@@ -37,7 +55,8 @@ export async function sendInvoice( email: string, payment_status: string, name: 
             padding-bottom: 20px;
         }
         .logo {
-            max-width: 150px;
+            width: 40vw;
+            height: 40vh;
         }
         .content {
             font-size: 14px;
@@ -66,13 +85,11 @@ export async function sendInvoice( email: string, payment_status: string, name: 
         }
         .button {
             display: inline-block;
-            background: #d4af37;
+            background: silver;
             color: white;
-            padding: 10px 15px;
+            padding: 4px 15px;
             text-decoration: none;
             border-radius: 5px;
-            font-weight: bold;
-            margin-top: 10px;
         }
         .footer {
             text-align: center;
@@ -94,12 +111,13 @@ export async function sendInvoice( email: string, payment_status: string, name: 
     <div class="content">
         <p>Dear ${name},</p>
 
-        <p>Thank you for shopping with <strong>BIA - The African Touch</strong>. Your order has been successfully placed on <strong>${new Date().getDate()}</strong>.</p>
+        <p>Thank you for shopping with <strong>BIA - The African Touch</strong>. Your order has been successfully placed on <strong>${formatDate(new Date())}</strong>.</p>
         
         <div class="order-details">
             <p><strong>Order #:</strong> ${order_number}</p>
             <p><strong>Total Amount:</strong> ${amount} RWF</p>
             <p><strong>Estimated Delivery:</strong> 1-3 Business Days</p>
+            <p><strong>Date:</strong> ${formatDate(new Date())}</p>
         </div>
 
         <p><strong>Order Items</strong></p>
@@ -112,31 +130,21 @@ export async function sendInvoice( email: string, payment_status: string, name: 
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>African Leather Shoes</td>
-                    <td>1</td>
-                    <td>20,000 RWF</td>
-                </tr>
-                <tr>
-                    <td>Traditional Woven Mat</td>
-                    <td>2</td>
-                    <td>15,000 RWF</td>
-                </tr>
-                <tr>
-                    <td>Handmade Cotton Shirt</td>
-                    <td>1</td>
-                    <td>10,000 RWF</td>
-                </tr>
+                ${products.map((item: any, i: number) => (
+                 `<tr key='${i}'>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unit_price}</td>
+                    </tr>
+                 `
+                ))}
             </tbody>
         </table>
 
-        <p><strong>Subtotal:</strong> ${Number(amount) - (Number(amount)* 0.18)} RWF</p>
-        <p><strong>VAT (18%):</strong> ${Number(amount)* 0.18} RWF</p>
+        <p><strong>Subtotal:</strong> ${amount} RWF</p>
+        <p><strong>Others:</strong> 0 RWF</p>
         <p><strong>Grand Total:</strong> ${amount} RWF</p>
-
-        <hr>
-
-        <p>You can track your order and view the details at:</p>
+        <p>You can track your order and view the delivery details through the link: <a href="https://biafricantouch.com/dash/orders/${order_number}">https://biafricantouch.com/dash/orders/${order_number}</a></p>
         <p><a href="https://biafricantouch.com/dash/orders/${order_number}" class="button">View Order</a></p>
 
         <p>---</p>
@@ -147,15 +155,16 @@ export async function sendInvoice( email: string, payment_status: string, name: 
     <!-- Footer -->
     <div class="footer">
         <p><a href="https://biafricantouch.com">Visit our website</a> | <a href="https://biafricantouch.com/auth/login">Log in to your account</a> | <a href="mailto:giselumutoni@gmail.com">Get support</a></p>
-        <p>Copyright © BIA - The African Touch, All rights reserved.</p>
+        <p>${new Date().getFullYear()} Copyright © BIA - The African Touch, All rights reserved.</p>
     </div>
 </div>
 
 </body>
 </html>`;
-sendSmtpEmail.sender = { "name": "BIA", "email": "codereveur@gmail.com" };
+sendSmtpEmail.sender = { "name": "BIA(Byose Iwacu Art)", "email": "codereveur@gmail.com" };
 sendSmtpEmail.to = [
-  { "email": email, "name": name }
+  { "email": email, "name": name },
+  { "email": "hacketrich@gmail.com", "name": "Commercial Officer" },
 ];
 sendSmtpEmail.replyTo = { "email": "giselumutoni@gmail.com", "name": "Bia Support Team" };
 sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };

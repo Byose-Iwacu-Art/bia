@@ -18,6 +18,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
         return NextResponse.json(result.rows[0], { status: 200 });
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ message: "Error retrieving user", error }, { status: 500 });
     }
 }

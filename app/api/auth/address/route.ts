@@ -22,6 +22,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         `;
         const insertValues = [billingaddress, street1, street2, id];
         const result = await client.query(insertUserSql, insertValues);
+        
+        const message = `Billing address has been added successfully.`;
+
+        const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;
+        await client.query(notification, [message, id, "Billing", "true", "Unread", `/checkout`, "Unread"])
 
         return NextResponse.json({ message: "User address saved successfully!", user: result.rows[0] }, { status: 201 });
     } catch (error) {

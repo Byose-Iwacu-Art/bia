@@ -5,9 +5,9 @@ import ProfileStatus from "./profileStatus";
 
 const links = [
   { href: "/dash/profile", icon: "bi-person", text: "Personal informations", desc: "View and edit your details" },
-  { href: "/dash/profile/login_security", icon: "bi-shield", text: "Login and security", desc: "Manage account authentication" },
-  { href: "/dash/profile/personal_address", icon: "bi-geo-alt", text: "Personal address", desc: "Manage billing and delivery address" },
-  { href: "/dash/profile/data_privacy", icon: "bi-lock", text: "Data privacy", desc: "Now supportive data privacy" }
+  //{ href: "/dash/profile/login_security", icon: "bi-shield", text: "Login and security", desc: "Manage account authentication" },
+//  { href: "/dash/profile/personal_address", icon: "bi-geo-alt", text: "Personal address", desc: "Manage billing and delivery address" },
+  //{ href: "/dash/profile/data_privacy", icon: "bi-lock", text: "Data privacy", desc: "Now supportive data privacy" }
 ];
 
 const ProfileBar = () => {

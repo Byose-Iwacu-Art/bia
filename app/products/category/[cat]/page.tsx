@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import ProductList from "@/app/pages/ProductList";
 import Preloader from "@/app/comps/forms/PreDivLoader";
 import Promotions from "@/app/comps/product/promotions";
+import FlashSales from "@/app/comps/product/flashsale";
 
 
 export default function Home ({ params }: { params: { cat: string } }) {
@@ -69,21 +70,26 @@ export default function Home ({ params }: { params: { cat: string } }) {
     return (
         <>
             <head>
-                <title>{(params.cat).toString()}</title>
+                <title>{String(params.cat)}</title>
             </head>
-            <div>
-                <Promotions />
+            <div className="px-5 py-3 bg-slate-50">
+                <FlashSales />
             </div>
             <div>
-                <h1 className="px-4 py-3 font-bold text-lg text-red-400">
+                <h1 className="px-5 py-4 font-bold text-lg text-red-400">
                     Products <i className="bi bi-chevron-right text-xs text-cyan-500"></i>
                 </h1>
             </div>
             <div className="w-full h-full flex px-4">
-                {/* Filter Panel */}
-                <div className="mx-2 max-w-[250px] bg-slate-50 rounded-md px-[2px] shadow w-max m-[1px] gap-4 h-max absolute z-20">
-                    <div className="flex justify-between py-3 px-2 font-semibold">
-                        <h4 className="mr-5">Filter</h4>
+               
+                {/* Product List and Sort */}
+                <div className="mx-1 w-screen">
+                    <div className="w-full">
+                        <div className="flex justify-end items-center w-full">
+                             {/* Filter Panel */}
+                <div className="mx-4 max-w-[250px] z-20">
+                    <div className="flex border justify-between p-2 rounded-md cursor-pointer" onClick={() => setFilterShow(!filterShow)}>
+                        <h4 className="mr-3">Filter</h4>
                         {filterShow ? (
                             <i onClick={handleCloseFilterShow} className="bi bi-x text-red-500 cursor-pointer font-semibold"></i>
                         ):(
@@ -91,7 +97,7 @@ export default function Home ({ params }: { params: { cat: string } }) {
                         )}
                     </div>
                     {filterShow && (
-                    <div className="bg-white p-3 rounded-lg text-sm hiddem sm:grid">
+                    <div className="bg-white sm:w-[20vw] border p-3 rounded-lg text-sm sm:grid absolute mt-2 right-4 ">
                         <form>
                             <div>
                                 <div className="flex justify-between">
@@ -129,7 +135,7 @@ export default function Home ({ params }: { params: { cat: string } }) {
                                     <label htmlFor="size" className="font-semibold">Size</label>
                                     <i className="bi bi-chevron-up"></i>
                                 </div>
-                                <div className="dropdown">
+                                <div className="dropdown p-2 max-h-[20vh] overflow-hidden overflow-y-auto">
                                     <div className="flex flex-wrap">
                                     {["Any","Newborn", "0-3 Months", "3-6 Months", "6-12 Months", "12-18 Months", 
                                       "18-24 Months", "2T", "3T", "4T", "5-6 Years", 
@@ -156,22 +162,21 @@ export default function Home ({ params }: { params: { cat: string } }) {
                 </div>
             
                 
-                {/* Product List and Sort */}
-                <div className="mx-1 w-screen" onClick={handleCloseFilterShow}>
-                    <div className="w-full">
-                        <div className="flex justify-between items-center w-full">
-                            <i className="i"></i>
                             <div className="flex border px-2 py-2 justify-self-end text-sm rounded-md"> 
                                 <label htmlFor="sortBy" className="text-slate-300 ">Sort by: </label>
                                 <select name="sortBy" className="max-w-[50px] outline-none ml-2 font-semibold" onChange={handleFilterChange}>
                                     <option value="">Any</option>
                                     <option value="popular">Popular</option>
                                     <option value="reviewed">Most Reviewed</option>
-                                    <option value="promoted">Promoted</option>
+                                    <option value="new">New</option>
                                 </select>
                             </div>
                         </div>
-                        <ProductList products={products} itemsPerPage={42}/>
+                        {products.length > 0 ? (
+                            <ProductList products={products} itemsPerPage={38} sortPage=""/> 
+                        ) : (
+                         <div className="h-[30vh] w-[30vw] text-red-500 flex justify-center items-center">No products found</div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -202,4 +207,3 @@ export default function Home ({ params }: { params: { cat: string } }) {
         </>
     );
 };
-

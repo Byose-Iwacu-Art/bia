@@ -1,22 +1,6 @@
 import { NextResponse } from "next/server";
 import client from "../../../db";
 
-// Define the structure for the payment details
-interface PaymentDetail {
-    paymentId: number;
-    orderNumber: number;
-    paymentDate: string;
-    amount: number;
-    paymentMethod: string;
-    cardNumber?: string;
-    cardHolderName?: string;
-    mobileMoneyProvider?: string;
-    mobileMoneyNumber?: string;
-    paypalTransactionId?: string;
-    createdAt: string;
-    flutter_response: string;
-}
-
 // Handle GET request with dynamic userId
 export async function GET(req: Request, { params }: { params: { userId: string } }) {
     const { userId } = params;
@@ -33,9 +17,14 @@ export async function GET(req: Request, { params }: { params: { userId: string }
                 p.amount,
                 p.payment_method,
                 p.full_name,
+                p.email,
+                p.address,
+                p.tx_ref,
+                p.provider,
                 p.account,
                 p.currency,
                 p.status,
+                p.details,
                 p.order_id,
                 p.created_at,
                 p.paid_at,
@@ -62,7 +51,11 @@ export async function GET(req: Request, { params }: { params: { userId: string }
             account: row.account,
             orderNumber: row.order_id,
             status: row.status,
-            name: row.name,
+            name: row.full_name,
+            email: row.email,
+            provider: row.provider,
+            address: row.address,
+            tx_ref: row.tx_ref,
             details: row.details,
             currency: row.currency,
             createdAt: row.created_at,

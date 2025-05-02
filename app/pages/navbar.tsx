@@ -71,20 +71,20 @@ const NavBar = () => {
     }
   }
   const links = [
-    { href: "/", icon: "bi-house", text: "Home" },
-    { href: "/products", icon: "bi-bag", text: "Products" },
+    { href: "/", icon: "bi-house-fill", text: "Home" },
+    { href: "/products", icon: "bi-bag-fill", text: "Products" },
     { href: "#", icon: "bi-search", text: "Search" },
-    { href: "https://tailors.biafricantouch.com", icon: "bi-mortarboard", text: "Tailors Dream College" },
+    { href: "https://tailors.biafricantouch.com", icon: "bi-mortarboard-fill", text: "Tailors Dream College" },
     /*{ href: "/stores", icon: "bi-shop", text: "Stores" }, */
-    { href: "https://tailors.biafricantouch.com/contact-us", icon: "bi-phone", text: "Contact us" },
+    { href: "https://tailors.biafricantouch.com/contact-us", icon: "bi-phone-fill", text: "Contact us" },
   ];
 
   return (
-    <header className={`z-50 fixed top-0 bg-white w-full ${isHidden ? 'shadow' : 'shadow-sm'}`}>
+    <header className={`z-50 fixed top-0 bg-white w-full ${isHidden ? 'shadow' : 'shadow-sm'} border-b border-yellow-100 sm:border-0`}>
       {/* Ads panel */}
       <Ads>
         <p className='text-slate-300 p-1 px-4'>We are hosting new Tailors Dream College soon, book a seat!</p> 
-        <Link className='bg-green-400 text-white px-2 py-[4px] m-1 rounded cursor-pointer' href={"https://tailors.biafricantouch.com/apply"}>Register now</Link>
+        <a className='bg-green-400 text-white px-2 py-[4px] m-1 rounded cursor-pointer' href={"https://tailors.biafricantouch.com/apply"} target="_blank">Register now</a>
       </Ads>
       {/*
       <WarningPopup message="This platform is still under development ... We promise to be back soon" />
@@ -102,7 +102,7 @@ const NavBar = () => {
           </div>
             {/* Button for Mobile */}
            
-          <form action={'/search'} method="get" className={`sm:flex ${isSearchOpen ? 'flex fixed left-0 mt-[30%] backdrop-blur-xl w-[90%] justify-between items-center z-50' : 'hidden'} bg-red-100 px-4 py-1 rounded sm:w-full space-x-4`}>
+          <form action={'/search'} method="get" className={`sm:flex ${isSearchOpen ? 'flex fixed left-0 mt-[30%] backdrop-blur-xl w-[90%] justify-between items-center z-50' : 'hidden'} bg-red-200 px-4 py-1 rounded sm:w-full space-x-4`}>
             <input 
               type="search" 
               name="q" 
@@ -120,7 +120,7 @@ const NavBar = () => {
         <div className="flex items-center sm:space-x-4 space-x-3 w-1/2 justify-end text-[14px] sm:w-[33%] sm:justify-between sm:py-0">
            
           <div className="text-[12px] font-[100] sm:flex hidden font-serif text-black sm:text-[15px]">
-            <i className="bi bi-telephone text-lg text-slate-400"></i>
+            <i className="bi bi-phone text-lg text-slate-400"></i>
             <span className="ml-2 mt-1 mr-3 text-slate-600 ">+250788282252</span>
           </div>
           <div>
@@ -156,7 +156,7 @@ const NavBar = () => {
           <div className="">
             {userInitials ? (
               <div className="relative flex items-center bg-slate-100 rounded-full p-1 cursor-pointer hover:bg-slate-200 transition-all duration-300" onClick={() => setIsOpen(!isOpen)}>
-                <div className="bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg" style={{ width: '40px', height: '40px' }}>
+                <div className="bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg" style={{ width: '33px', height: '33px' }}>
                   {userInitials}
                 </div>
                 
@@ -186,7 +186,7 @@ const NavBar = () => {
         </div>
       </nav>
 
-      <menu className={`flex justify-between pb-2 pl-[25px] transition-transform duration-500 ${isHidden ? 'fixed -translate-y-full opacity-0' : 'opacity-100 -translate-y-0'} w-full small-device-menu`}>
+      <menu className={`flex justify-between pb-2 pl-[25px] transition-transform duration-500 ease-in-out ${isHidden ? 'fixed -translate-y-full opacity-0 hidden' : 'opacity-100 -translate-y-0'} w-full small-device-menu`}>
         <div className="hidden sm:flex">
           
         </div>

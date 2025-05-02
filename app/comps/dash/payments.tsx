@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import PaymentDetailsPopup from "./paymentDetails";
 
 interface PaymentDetail {
   paymentId: number;
@@ -10,6 +11,10 @@ interface PaymentDetail {
   paymentMethod: string;
   account: string;
   name: string;
+  email: string,
+  provider: string,
+  address: string,
+  tx_ref: string,
   currency: string;
   details: string;
   status: string;
@@ -22,6 +27,7 @@ interface PaymentDetail {
 const Transactions = () => {
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetail[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [view, setView] = useState<PaymentDetail | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -82,6 +88,9 @@ const Transactions = () => {
     return `${Math.floor(diffInMonths / 12)} year${diffInMonths !== 1 ? "s" : ""} ago`;
   };
 
+  const closeView = () => {
+    setView(null);
+  }
   if (loading) {
     return <p className="min-h-[30vh] w-full flex items-center justify-center text-gray-500 text-sm">Loading payments...</p>;
   }
@@ -121,7 +130,7 @@ const Transactions = () => {
                     <td className="py-3 px-6">{payment.paymentMethod}</td>
                     <td className="py-3 px-6">{payment.account}</td>
                     <td className="py-3 px-6">{payment.transactionId}</td>
-                    <td className="py-3 px-6">{payment.orderNumber}</td>
+                    <td className="py-3 px-6">#{payment.orderNumber}</td>
                     <td className="py-3 px-6">{`${payment.currency} ${payment.amount}`}</td>
                     <td className={`py-3 px-6`}>
                        <span  className={`px-2 py-1 rounded ${
@@ -134,10 +143,11 @@ const Transactions = () => {
                     </td>
                     <td className="py-3 px-6">{timeAgo(payment.createdAt)}</td>
                     <td className="py-3 px-6 flex space-x-2">
-                      {payment.status !== "Paid" && flutterData?.meta?.authorization?.redirect ? (
+                      <i className="bi bi-info-circle text-emerald-600 border border-emerald-400 bg-emerald-200 px-2 py-[2px] rounded" onClick={() => setView(payment)}></i>
+                      {payment.status !== "Paid" && flutterData?.data?.paymentLinkUrl ? (
                         <>
                          <Link href={`/dash/orders/${payment.orderNumber}`} onClick={() => redirect(`/dash/orders${payment.orderNumber}`)} className="text-orange-600 border border-orange-400 bg-orange-200 px-2 py-[2px] rounded text-nowrap">View Order</Link>
-                         <Link href={flutterData.meta.authorization.redirect} onClick={() => redirect(flutterData.meta.authorization.redirect)} className="text-teal-600 border border-teal-400 bg-teal-200 px-2 py-[2px] rounded">Pay</Link>
+                         <Link href={ flutterData?.data?.paymentLinkUrl} onClick={() => redirect(flutterData?.data?.paymentLinkUrl)} className="text-teal-600 border border-teal-400 bg-teal-200 px-2 py-[2px] rounded">Pay</Link>
                         </>
                        ):(
                         <>
@@ -155,6 +165,7 @@ const Transactions = () => {
           </tbody>
         </table>
       </div>
+      {view && <PaymentDetailsPopup payment={view} onClose={closeView}/>}
     </div>
   );
 };

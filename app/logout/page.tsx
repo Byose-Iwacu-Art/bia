@@ -35,7 +35,7 @@ const Logout: React.FC = () => {
     }, []); // ✅ Added `router` to dependency array
 
     return (
-        <div className="flex justify-center items-center h-screen">
+        <div className="flex justify-center items-center h-[40vh]">
             <Head>
                 <title>Logging Out</title>
             </Head>

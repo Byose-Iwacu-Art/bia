@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import axios from "axios";
 import { redirect, useRouter } from "next/navigation";
+import { EmailVerifyModal } from "./verify";
 
 const SignupForm = () => {
     const [formData, setFormData] = useState({
@@ -26,6 +26,7 @@ const SignupForm = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [isFormValid, setIsFormValid] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [verify, setVerify] = useState<string | null> (null);
 
     const router = useRouter();
     // Form validation
@@ -87,10 +88,7 @@ const SignupForm = () => {
             const res = await axios.post("/api/auth/register", formData);
             setIsSuccess(true);
             setResponseMessage(res.data.message || "Registered successfully!");
-            setTimeout(()=>{
-                router.push('/auth/login');
-                redirect("/auth/login");
-            }, 3000)
+            setVerify(formData.email);
         } catch (error: any) {
             setIsSuccess(false);
             setResponseMessage(error.response?.data.message || "Registration failed due to server error");
@@ -222,6 +220,7 @@ const SignupForm = () => {
                     </form>
                 </div>
             </div>
+            {verify && (<EmailVerifyModal onClose={() => setVerify(null)} event="account" emailOpt={verify} />)}
         </>
     );
 };

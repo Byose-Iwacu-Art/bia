@@ -90,10 +90,10 @@ const handleSubmit = async (e: any) => {
     <div className="p-7">
       <div className="flex w-full flex-wrap text-center sm:text-left my-4 sm:my-1 sm:flex-nowrap sm:justify-between">
       <div className="flex flex-col w-full sm:w-[40%]">
-          <h4 className="text-3xl font-medium text-slate-700 mb-3">Do You Have Something To Share?</h4>
+          <h4 className="text-3xl font-medium text-slate-700 mb-3">Need to talk to the team?</h4>
           <p className="py-3 text-slate-700">
             BIA The African Touch Team is glad to hear from, if you have anything to share for better performance
-            and best services now that our team is always there for you 24/7. Feel free to reach to us and ask! 
+            and best services know that our team is always there for you 24/7. Feel free to reach to us! 
             
           </p>
         </div>
@@ -112,9 +112,9 @@ const handleSubmit = async (e: any) => {
             <div className="w-full my-2">
               <textarea name="message" id="message" placeholder="Anything from you !"  onChange={handleChange}className="py-2 px-2 border-l border-b border-slate-600 text-sm outline-none w-full bg-transparent text-slate-950 placeholder:text-black resize-none" ></textarea>
             </div> 
-            <span className="text-red-500 text-xs">{errors.name+"  "+errors.phone+"  "+errors.email+"  "+errors.message}</span>
+            <span className="text-red-500 text-xs capitalize">{errors.name+"  "+errors.phone+"  "+errors.email+"  "+errors.message}</span>
             <div className="w-full flex justify-end">
-               <button disabled={!isFormValid || isSubmitting}  type="submit" className="py-2 px-4 rounded-md bg-black text-white text-sm">{isSubmitting ? 'Sending ...' : isSuccess ? 'Sent ✅' : 'Submit'}</button>
+               <button disabled={!isFormValid || isSubmitting}  type="submit" className="py-2 px-4 rounded-md bg-orange-600 text-white text-sm cursor-pointer">{isSubmitting ? 'Sending ...' : isSuccess ? 'Sent ✅' : 'Submit'}</button>
             </div>
           </form>
         </div>

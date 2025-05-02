@@ -4,6 +4,7 @@ import client from "../../db";
 interface OrderDetailRow {
     product_id: number;
     product_name: string;
+    hashed_id: string;
     product_image: string;
     product_category: string;
     color: string;
@@ -11,6 +12,7 @@ interface OrderDetailRow {
     quantity: number;
     unit_price: number;
     order_number: string;
+    details: string;
     created_at: string;
     total_amount: number;
     payment_method: string;
@@ -35,20 +37,22 @@ export async function GET(req: Request, { params }: { params: { orderNumber: str
                 o.total_amount,
                 o.payment_method,
                 o.status,
+                o.details,
                 od.product_id,
                 od.color,
                 od.size,
                 od.quantity,
                 od.unit_price,
                 p.name AS product_name,
+                p.hashed_id,
                 p.category AS product_category,
                 p.image AS product_image,
                 py.flutter_response,
                 py.status AS payment_status
             FROM orders o
-            JOIN orderdetails od ON o.order_id = od.order_id
-            JOIN products p ON od.product_id = p.id
-            JOIN payments py ON CAST(py.order_id AS text) = $1
+            JOIN orderdetails od ON od.order_id = o.order_id
+            JOIN products p ON p.id = od.product_id
+            JOIN payments py ON py.order_id = CAST(o.order_number AS INTEGER)
             WHERE o.order_number = $1
             ORDER BY od.product_id;
         `;
@@ -64,6 +68,7 @@ export async function GET(req: Request, { params }: { params: { orderNumber: str
 
         const order = {
             orderNumber: rows[0].order_number,
+            details: rows[0].details,
             createdAt: rows[0].created_at,
             totalAmount: rows[0].total_amount,
             paymentMethod: rows[0].payment_method,
@@ -79,6 +84,7 @@ export async function GET(req: Request, { params }: { params: { orderNumber: str
                 size: row.size,
                 quantity: row.quantity,
                 price: row.unit_price,
+                hashed_id: row.hashed_id,
             })),
         };
 

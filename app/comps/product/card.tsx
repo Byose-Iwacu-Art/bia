@@ -46,14 +46,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, image, size, color,
   return (
     <div 
      className="w-[47%] h-max sm:max-w-[60%] md:max-w-[45%] lg:max-w-[200px] py-1 sm:py-2 md:py-3 lg:py-3 px-2 rounded-sm overflow-hidden shadow-md bg-white text-center mx-auto sm:mx-auto md:mx-auto lg:mx-1 my-2 hover:shadow-xl"
-     onClick={() => window.location.assign(`/products/${hashed_id}`)}
     >
-      <div className="w-full h-[140px] cursor-pointer  rounded-md">
+      <div className="w-full h-[140px] cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
           <img className="w-full h-full object-contain" src={image || "/no_image.jpeg"} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
-        <Link href={`/products/${hashed_id}`}>
+        <Link href={`/products/${hashed_id}`} onClick={() => window.location.assign(`/products/${hashed_id}`)}>
           <div className="text-base text-gray-700">{name}</div>
         </Link>
 
@@ -108,15 +107,14 @@ const FlashCard: React.FC<ProductCardProps> = ({ id, name, image, size, color, p
   return (
     <div 
      className="w-[45vw] h-max sm:w-[200px] py-1 sm:py-2 md:py-3 lg:py-3 px-2 rounded-sm overflow-hidden shadow-md bg-white text-center mx-auto sm:mx-auto md:mx-auto lg:mx-1  hover:shadow-xl"
-     onClick={() => {window.location.assign(`/products/${hashed_id}`)}}
     >
-      <div className="w-full h-[140px] cursor-pointer  rounded-md">
+      <div className="w-full h-[140px] cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
           <div className="absolute text-left bg-red-500 text-sm text-white flex items-center p-1 font-medium rounded">{"-"+size+"%"}</div>
           <img className="w-full h-full object-contain" src={image} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
-        <Link href={`/products/${hashed_id}`}>
+        <Link href={`/products/${hashed_id}`} onClick={() => window.location.assign(`/products/${hashed_id}`)}>
           <div className="text-base text-gray-700">{name}</div>
         </Link>
        

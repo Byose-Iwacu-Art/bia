@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@getbrevo/brevo": "^2.2.0",
+    "@irembo/irembopay-node-sdk": "^1.0.0",
     "@neondatabase/serverless": "^0.10.4",
     "@vercel/postgres": "^0.10.0",
     "axios": "^1.7.7",

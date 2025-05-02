@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import CartDropdown from "../nav/cart";
 import { redirect } from "next/navigation";
 
@@ -12,7 +12,29 @@ interface CartItem {
     amount: number;
     image: string;
   }
-  
+
+interface Notification  {
+  id: number;
+  content_text: string;
+  event: string;
+  action_required: string;
+  created_at: string;
+  view: string  | null;
+};
+
+function formatDate(dateString: any) {
+  const date = new Date(dateString);
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const year = date.getFullYear();
+  const month = months[date.getMonth()];
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
+  const prefix = Number(hours) >= 12 ? 'PM' : 'AM';
+
+  return `${month}, ${day} ${year} ${hours}:${minutes} ${prefix}`;
+};
+
 
 const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }) => {
       const [isHidden, setIsHidden] = useState(false);
@@ -20,7 +42,11 @@ const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }
       const [isOpen, setIsOpen] = useState(false);
       const [isCartOpen, setIsCartOpen] = useState(false);
       const [cartItems, setCartItems] = useState<CartItem[]>([]);
+      const [showNotifications, setShowNotifications] = useState(false);
+      const [notifications, setNotifications] = useState<Notification[]>([]); 
 
+      const wrapperRef = useRef(null);
+  
         // Load initial cart items and user session
         useEffect(() => {
           const handleScroll = () => {
@@ -59,6 +85,68 @@ const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }
       
         // Calculate total cart items by summing up the amounts
         const totalCartItems = cartItems.reduce((acc, item) => acc + item.amount, 0);
+        
+        const fetchNotifications = useCallback(async () => {
+          try {
+            const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+            if (userSession && userSession.id) {
+              const userId = userSession.id;
+              const res = await fetch(`/api/auth/notification/${userId}`);
+              const data = await res.json();
+              setNotifications(Array.isArray(data) ? data : []);
+            }
+          } catch (err) {
+            console.error("Failed to load notifications:", err);
+            setNotifications([]); // fallback to empty array on error
+          }
+        }, []);
+        
+        
+  const updateNotifications = async () => {
+    try {
+      const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
+      if (userSession && userSession.id) {
+        const userId = userSession.id;
+        const res = await fetch(`/api/auth/notification/update/${userId}`);
+        if (res.ok) {
+          console.log("Notifications updated");
+       }
+      }
+    } catch (err) {
+      console.error("Failed to trigger update job:", err);
+    }
+  };
+
+  
+  useEffect(() => {
+    // Initial calls
+    fetchNotifications();
+
+    // Set interval to repeat every 5 seconds
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 1000 * 5); // 2000ms = 2 seconds
+
+    // Clear interval when component unmounts
+    return () => clearInterval(interval);
+  }, [fetchNotifications]);
+
+  useEffect(() => { 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !(wrapperRef.current as any).contains(event.target)) {
+        updateNotifications();
+        setShowNotifications(false);
+        
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const unreadCount = Array.isArray(notifications)
+  ? notifications.filter((n) => n.view === "Unread").length
+  : 0;
+
     return (
         <div className="z-30 fixed top-0 bg-white sm:ml-[200px] dashbar">
             <div className="flex justify-between px-5 shadow-sm py-2 items-center w-full ">
@@ -72,14 +160,54 @@ const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }
                  <span className="inline">Back</span>
                 </Link>
                 </div>
-                <div className="flex items-center justify-around w-[60vw] sm:w-auto space-x-5">
-                    <div className="flex mx-2 p-1 text-slate-500">
-                        <i className="bi bi-chat-dots text-2xl"></i>
-                        <span className="absolute w-4 h-4 text-center bg-red-400 text-white rounded-full ml-3 text-[10px]">5</span>
-                    </div>
-                    <div className="flex mx-2 p-1 text-slate-500">
-                        <i className="bi bi-bell text-2xl"></i>
-                        <span className="absolute w-4 h-4 text-center bg-red-400 text-white rounded-full ml-3 text-[10px]">5</span>
+                <div className="flex items-center justify-around w-[60vw] sm:w-auto sm:space-x-5">
+                    <div className="relative">
+                      <div className="flex mx-2 p-1 text-slate-500" onClick={() => setShowNotifications((prev) => !prev)}>
+                        <i className="bi bi-bell-fill text-2xl"></i>
+                        {unreadCount > 0 && (
+                          <span className="absolute w-4 h-4 text-center bg-red-400 text-white rounded-full ml-3 text-[10px] ">
+                            {unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      {/* Notification Dropdown */}
+          {showNotifications && (
+            <div
+              ref={wrapperRef}
+              className="absolute sm:-right-28 w-72 mt-2 bg-white shadow-lg rounded-lg p-3 border border-orange-300"
+            >
+              <div className="text-sm font-semibold text-gray-700">
+                Notifications
+              </div>
+              <ul className="max-h-96 overflow-y-auto divide-y divide-neutral-300">
+                {notifications.length > 0 ? (
+                  notifications.map((n) => (
+                    <li
+                      key={n.id}
+                      className={`py-3 px-4 hover:bg-neutral-100 cursor-pointer space-y-1 text-sm ${
+                        n.view === "Unread" ? "font-semibold text-gray-700" : "text-neutral-500"
+                      }`}
+                    >
+                      <div className="text-emerald-700">{n.event}</div>
+                      <div>{n.content_text}</div>
+                      <div className="text-xs text-gray-500 mt-1 flex justify-between items-center">
+                        <span className="text-orange-900">{formatDate(n.created_at)}</span>
+                        <a
+                          href={n.action_required || "/dash/"}
+                          className="border-b border-emerald-800 px-2 py-[2px] rounded-dull text-emerald-700 flex justify-self-end"
+                          target="_blank"
+                        >
+                          View
+                        </a>
+                      </div>
+                    </li>
+                  ))
+                ) : (
+                  <li className="p-3 text-gray-500 text-center">No notifications</li>
+                )}
+              </ul>
+            </div>
+          )}
                     </div>
 
                      {/* Cart with item count */}
@@ -104,7 +232,7 @@ const Top = ({ onSidebarClick }: { onSidebarClick: (productId: string) => void }
           <div className="">
             {userInitials ? (
               <div className="relative flex items-center bg-slate-100 rounded-full p-1 cursor-pointer hover:bg-slate-200 transition-all duration-300" onClick={() => setIsOpen(!isOpen)}>
-                <div className="bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg" style={{ width: '40px', height: '40px' }}>
+                <div className="bg-green-500 text-white rounded-full flex items-center justify-center text-sm font-bold shadow-lg" style={{ width: '30px', height: '30px' }}>
                   {userInitials}
                 </div>
                 

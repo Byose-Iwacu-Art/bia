@@ -13,7 +13,7 @@ const ProfileStatus: React.FC<ProfileStatusProps> = ({ completionPercentage }) =
     circleCircumference - (completionPercentage / 100) * circleCircumference;
 
   return (
-    <div className="flex bg-red-300 text-white p-4 py-3 rounded-xl">
+    <div className="flex bg-orange-300 text-white p-4 py-3 rounded-xl">
      <div className="flex justify-center items-center w-2/5">
         <svg
           width="100"

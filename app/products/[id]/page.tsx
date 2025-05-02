@@ -12,7 +12,7 @@ interface Product {
     description: string;
     price: number;
     originalPrice: number;
-    discount: number;
+    rates: number;
     image: string;
     images: string[];
     rating: number;

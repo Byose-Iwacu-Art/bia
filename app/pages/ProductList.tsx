@@ -20,9 +20,10 @@ interface Product {
 interface ProductListProps {
   products: Product[]; // Accept products as a prop
   itemsPerPage: number;
+  sortPage: string;
 }
 
-const ProductList: React.FC<ProductListProps> = ({ products, itemsPerPage }) => {
+const ProductList: React.FC<ProductListProps> = ({ products, itemsPerPage, sortPage }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   if (!products.length) {

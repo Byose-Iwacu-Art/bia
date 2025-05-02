@@ -1,7 +1,8 @@
 "use client";
 import { useEffect, useState } from 'react';
-import SlideShow from '../home/slides';
 import ProductGallery from './images_slides';
+import { RatingStars } from './ratings';
+import axios from 'axios';
 
 interface Product {
     id: string;
@@ -10,7 +11,7 @@ interface Product {
     description: string;
     price: number;
     originalPrice: number;
-    discount: number;
+    rates: number;
     image: string;
     images: string[] | [];
     rating: number;
@@ -36,7 +37,8 @@ const Item = ({ product }: ItemProps) => {
     const [price, setPrice] = useState<number>(0); // Product price with discount
     const [isInCart, setIsInCart] = useState(false);
     const [discountId, setDiscountId] = useState<Promo[]>([]);
- 
+    const [like, setLike] = useState(false);
+
     useEffect(() => {
         fetch(`/api/products/discount`)
             .then((response) => {
@@ -78,10 +80,19 @@ const Item = ({ product }: ItemProps) => {
     }, [discountId, product]);
 
     
- 
-    // Converting string colors to array
-    const colorsArray = product.colors || [];
-
+    const rate = async (id: string) => {
+        try {
+            if(!like){
+             const response = await axios.get(`/api/products/rate?id=${id}`);
+             if(response.status === 200){
+                setLike(true);
+             }
+            }
+        } catch (error: unknown) {
+            alert(error);
+            setLike(false);
+        }
+    }
     // Formatting date
     const formatDate = (date: Date) => {
         return date.toLocaleString('default', { month: 'short' }) + ', ' + date.getDate() + ' ' + date.getFullYear();
@@ -138,10 +149,9 @@ const Item = ({ product }: ItemProps) => {
     const arr = str.split(",");
     const arrSizes = strSizes.split(",");
 
-
     return (
         <>
-            <div className="title font-bold capitalize text-slate-500 text-sm flex px-3 sm:px-6 sm:mx-2 pt-3  mt-4 text-nowrap max-w-[90%] overflow-hidden">
+            <div className="title font-bold capitalize text-slate-500 text-sm flex px-4 sm:px-2 sm:mx-2 pt-3  mt-6 text-nowrap max-w-[90%] overflow-hidden">
              <h1>Products</h1>
              <span className='mx-1  bi bi-dot'></span>
              <h1>{product.category}</h1>
@@ -180,17 +190,7 @@ const Item = ({ product }: ItemProps) => {
                             <h1 className='text-xl font-bold mt-3'>{product.name}</h1>
                             <p className='my-[1px] mx-1 text-xs text-slate-300'>{product.description}</p>
                         </div>
-                        <div className="more text-xs flex">
-                            <div className="reviews ">
-                                <i className="bi bi-star-fill text-orange-300 mr-1"></i>
-                                <i className="bi bi-star-fill text-orange-300 mr-1"></i>
-                                <i className="bi bi-star-fill text-orange-300 mr-1"></i>
-                                <i className="bi bi-star-fill text-orange-300 mr-1"></i>
-                                <i className="bi bi-star-fill text-orange-100"></i>
-                                <span className="font-bold mx-5">4.5 reviews :</span>
-                            </div>
-                            <div className="sold-items text-red-400 font-bold">0 Sold</div>
-                        </div>
+                        <RatingStars rate={product.rates}/>
                        
                         {discountId.some(disc => disc.product_id == product.id && disc.status == "active") ? (
                             <>
@@ -290,8 +290,8 @@ const Item = ({ product }: ItemProps) => {
                         >
                             <i className="bi bi-cart mr-2"></i>{isInCart ? "Added ✔️" : "Add to Cart"}
                         </button>
-                        <button className="px-4 py-2 bg-stone-100 text-slate-400 my-1 w-[15%] rounded-lg">
-                            <i className="bi bi-heart text-lg"></i>
+                        <button className={`px-4 py-2 ${like === true ? 'bg-red-500 text-white cursor-not-allowed' : 'bg-stone-100 text-slate-400'} my-1 w-[15%] rounded-lg`} onClick={() => rate(product.id)} disabled={like}>
+                            <i className="bi bi-heart text-xl"></i>
                         </button>
                     </div>
                 </div>

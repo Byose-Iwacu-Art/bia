@@ -20,7 +20,8 @@ export async function GET(req: Request, { params }: { params: { userId: string }
                 o.payment_method, 
                 o.total_amount, 
                 o.delivery_allowed, 
-                o.status, 
+                o.status,
+                o.details, 
                 pd.payment_id,
                 pd.status as payment_status
             FROM orders o

@@ -11,11 +11,13 @@ interface OrderItem {
   size: string;
   quantity: number;
   price: number;
+  hashed_id: string;
  
 }
 
 interface Order {
   orderNumber: string;
+  details: string;
   createdAt: string;
   totalAmount: number;
   paymentMethod: string;
@@ -82,6 +84,11 @@ const Order = ({ params }: { params: { orderNumber: string } }) => {
             <div className="head">
               <h4 className="font-semibold text-sm mb-4 text-gray-700">Order Items</h4>
             </div>
+            {order.details && (
+              <div className="text-sm text-neutral-600 my-2">
+               <strong>Detailed:</strong> {order.details}
+              </div>
+            )}
             <div className="details">
               {order.items.map((item) => (
                 <div
@@ -97,9 +104,9 @@ const Order = ({ params }: { params: { orderNumber: string } }) => {
                       />
                     </div>
                     <div className="flex flex-col">
-                      <Link href={`/products/${item.productId}`} className="text-base mb-2">
+                      <a href={`/products/${item.hashed_id}`} className="text-base mb-2">
                         {item.productName}
-                      </Link>
+                      </a>
                       <span className="text-slate-400 text-sm">
                         {item.productCategory} | {item.color} | {item.size}
                       </span>
@@ -164,7 +171,7 @@ const Order = ({ params }: { params: { orderNumber: string } }) => {
               </ul>
               {order.payment_status !== "Paid" && (
                 <div className="w-full text-center p-2 rounded-lg my-2 bg-sky-400 text-white">
-                  <a href={flutterData.meta.authorization.redirect} target="_blank" rel="noopener noreferrer">Pay Now</a>
+                  <a href={flutterData?.data?.paymentLinkUrl} target="_blank" rel="noopener noreferrer">Pay Now</a>
                 </div>
               )}
               

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from '../../db';
-import { stat } from "fs";
 import { sendOrderPaymentsEmail } from "../../utils/config";
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -8,7 +7,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const body = await req.json();
         console.log("Received body:", body);
 
-        const { tid, account, status, email, name } = body;
+        const { tid, account, status, email, name, user_id } = body;
         if (!tid || !account || !status) {
             console.error("Validation failed. Missing fields:", { tid, account, status });
             return NextResponse.json({ message: "Failed" }, { status: 400 });
@@ -23,7 +22,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
         const values = [status, created_at, tid, account];
         const result = await client.query(query, values);
-        await sendOrderPaymentsEmail(email, status, name, account, result.rows[0].amount, message)
+
+        await sendOrderPaymentsEmail(result.tex_ref, email, status, name, account, result.rows[0].amount, message)
+
+        const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, created_at, mailed, sms) VALUES($1, $2, $3, $4, $5, $6, $7, NOW(), 'yes', 'no')`;
+        await client.query(notification, [message, user_id, "Payment", "true", "Unread", '/dash/payments', "Unread"])
+
         return NextResponse.json({ message: "success", data: result.rows[0] }, { status: 201 });
     } catch (error) {
         console.error("API error:", error);

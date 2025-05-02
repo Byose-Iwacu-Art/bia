@@ -42,8 +42,8 @@ WHERE p.user_id = $1 AND p.status = 'Paid';
         // Query to get the total inboxes (example query, modify based on your schema)
         const inboxesQuery = `
             SELECT COUNT(*) AS total_inboxes
-            FROM contact_messages
-            WHERE email = $1;
+            FROM invoices
+            WHERE user_id = $1 AND status = 'Unpaid';
         `;
 
         const [totalOrdersResult, totalPaymentsResult, pendingOrdersResult, deliveredOrdersResult, inboxesResult] = await Promise.all([

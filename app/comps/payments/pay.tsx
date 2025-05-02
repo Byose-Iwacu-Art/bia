@@ -33,20 +33,16 @@ const Pay: React.FC<PayProps> = ({
     const [loading, setLoading] = useState<boolean>(false);
     const [name, setName] = useState(initialName);
     const [accountInput, setAccountInput] = useState(account);
-    const [link, setLink] = useState("");
-
-    if(account[2] !== "5"){
-        account = "+250"+account;
-    }
+    const [link, setLink] = useState<string | null>(null);
      // Function to clear messages after a few seconds
-   useEffect(() => {
+    useEffect(() => {
     if (responseMessage) {
       const timer = setTimeout(() => {
         setResponseMessage(null);
       }, 10000); // Hide after 4 seconds
       return () => clearTimeout(timer);
     }
-  }, [responseMessage]);
+    }, [responseMessage]);
       // Clear the cart
   const clearCart = () => {
     localStorage.removeItem('cart'); // Clear from localStorage
@@ -54,7 +50,7 @@ const Pay: React.FC<PayProps> = ({
     const handlePayment = async () => {
         setLoading(true);
         try {
-            const response = await fetch('/api/payments', {
+            const response: any = await fetch('/api/payments/irembo', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -71,13 +67,11 @@ const Pay: React.FC<PayProps> = ({
                     address,
                 }),
             });
-
             const data = await response.json();
-
-            if (data.message.includes('success')) {
+            if (response.ok) {
                 setMessageType('success');
-                setResponseMessage(data.message + " Redirecting ...");
-                setLink(data.redirect);
+                setResponseMessage(data.message);
+                setLink(data.paymentLinkUrl);
                 clearCart();
                 setLoading(false);
             } else {
@@ -93,10 +87,11 @@ const Pay: React.FC<PayProps> = ({
         }
     };
     useEffect(() => {
-        if(link !== ""){
-            window.location.assign(link)
+        if(link){
+         window.location.assign(""+link)
         }
     },[link])
+    
     
     return (
         <>
@@ -147,15 +142,7 @@ const Pay: React.FC<PayProps> = ({
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-gray-600 text-sm mb-2">Account</label>
-                        <input 
-                            type="text" 
-                            value={accountInput} 
-                            onChange={(e) => setAccountInput(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-                        />
-                    </div>
+                    
                 </div>
 
                

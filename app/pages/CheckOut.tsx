@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useTransition } from 'react';
 import Pay from '../comps/payments/pay';
 import AlertNotification from '../comps/nav/notify';
-import { useRouter } from 'next/navigation';
 
 interface CartItem {
   id: number;
@@ -28,7 +27,11 @@ interface User {
 interface CheckOutProps {
   onAddLocationClick: () => void;
 }
-
+const paymentMethods = [
+  {name: "Mobile Money", icon: "/icons/mtn.png"},
+  {name: "Airtel Money", icon: "/icons/airtel.jpeg"},
+  {name: "Cards (Visa, MasterCard, American Express)", icon: "/icons/cards.png"},
+]
 const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [selectedPayment, setSelectedPayment] = useState<string>('Mobile Money');
@@ -37,6 +40,7 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
   const [user, setUser] = useState<User | null>(null);  // Single user object instead of array
   const [isPayModalOpen, setIsPayModalOpen] = useState(false);
   const [orderNumber, setOrderNumber] = useState<string>('');
+  const [details, setDetails] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -133,7 +137,10 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
     return domainPart;
   }
   
-
+      const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+          const { name, value } = e.target;
+          setDetails(value);
+      };
 
 
 // Add this function inside the Checkout component
@@ -149,7 +156,7 @@ const handleCheckout = async () => {
 
   if(user.billingaddress === "" || !user.billingaddress){
     setError("Please add billing address");
-     return;
+    return;
   }
 
   const orderData = {
@@ -157,6 +164,7 @@ const handleCheckout = async () => {
     payment_method: selectedPayment,
     total_mount: calculateTotal(),
     delivery_allowed: isOn,
+    details,
     billing_address: user.billingaddress + ", " + user.street1 + " - " + user.street2,
     shipping_address: null,
     shipping_fee: 0.00,
@@ -164,6 +172,7 @@ const handleCheckout = async () => {
     orderDetails: cartItems.map((item) => ({
       product_id: item.id,
       unit_price: item.price,
+      name: item.name,
       quantity: item.amount,
       size: item.size,
       color: item.color,
@@ -187,11 +196,13 @@ const handleCheckout = async () => {
     });
 
     if (response.ok) {
-          setOrderAdd(true);
-          setSuccess("Order added successfully")
+      setOrderAdd(true);
+      setSuccess("Order added successfully")
       const data = await response.json();
       setOrderNumber(data.order.order_number);
       setLoading(false)
+      //handle payments
+      handleOpenPayment();
     } else {
       const errorData = await response.json(); // Get the error message from the response
       setError("Error occured. "+errorData.message);
@@ -224,10 +235,6 @@ const handleButtonClick = async () => {
    try {
     
     await handleCheckout(); // Ensure handleCheckout completes successfully
-    setTimeout(() => {
-        handleOpenPayment();
-    }, 5000)
-  
    } catch (error) {
     setError(""+error);
    }
@@ -238,8 +245,8 @@ const handleButtonClick = async () => {
   
   return  (
     <div className="bg-slate-100 min-h-screen">
-      <div className="checkout-page mx-auto px-4 sm:px-8 py-4">
-        <h2 className="text-xl font-semibold mb-4">Checkout</h2>
+      <div className="checkout-page mx-auto px-4 sm:px-8 py-5">
+        <h2 className="text-xl font-semibold mb-4 mt-5">Checkout</h2>
         <div className="flex flex-col sm:flex-row">
           {/* Left Side: Address, Payment, and Cart Items */}
           <div className="details flex flex-col-reverse w-full sm:w-4/6 lg:w-4/6 sm:flex-col" >
@@ -279,26 +286,25 @@ const handleButtonClick = async () => {
                   </button>
                 </div>
                 <div className="space-y-3 py-4">
-                  {['Mobile Money'].map((method) => (
-                    <div className="flex justify-between items-center" key={method}>
+                  {paymentMethods.map((method, i) => (
+                    <div className="flex justify-between items-center" key={i}>
                       <label htmlFor="paymentMethod" className="flex items-center">
-                        <div className="bg-slate-100 h-10 w-10 rounded-full p-1 mr-2">
+                        <div className="bg-slate-100 h-10 w-10 rounded-full mr-2">
                          {/** <i className="bi bi-paypal text-blue-500"></i> */}
-                          <img src="/icons/mtn-logo.jpg" alt="" className='w-full h-full rounded-full object-cover'/>
+                          <img src={method.icon} alt="" className='w-full h-full rounded-full object-cover'/>
                         </div>
                         <div>
-                          <span className="font-medium text-sm">{method} <span className="ml-2">*** {method === "Mobile Money" ? (getLast(""+user?.phone)) : method === "Paypal" ? (removePrefix(""+user?.email)) : '6789'}</span></span>
-                          <p className="text-xs text-slate-300">Wrap your items</p>
+                          <span className="font-medium text-sm">{method.name} <span className="ml-2"></span></span>
+                          <p className="text-xs text-slate-300">Easy and fast</p>
                         </div>
                       </label>
                       <input
                         type="radio"
                         name="paymentMethod"
-                        value={method}
-                        checked={selectedPayment === method}
-                        onChange={() => setSelectedPayment(method)}
+                        value={method.name}
+                        checked={selectedPayment === method.name}
+                        onChange={() => setSelectedPayment(method.name)}
                         className="form-radio h-5 w-5 text-red-600"
-                        disabled={method === "Visa" || method === "Paypal"}
                       />
                     </div>
                   ))}
@@ -367,7 +373,7 @@ const handleButtonClick = async () => {
                 <i className="bi bi-truck w-10 h-10 flex justify-center items-center text-center text-2xl text-sky-400 bg-sky-100 rounded-full mr-3"></i>
                 <label>
                   <span className="font-medium">Allow Delivery</span>
-                  <p className="text-xs text-slate-300"><i className="bi bi-fire"></i> We support delivery within 3 to 15 days</p>
+                  <p className="text-xs text-slate-300"><i className="bi bi-fire"></i> We support delivery within 1 to 15 days</p>
                 </label>
               </div>
               <button 
@@ -400,6 +406,17 @@ const handleButtonClick = async () => {
                 />
               </button>
             </div>
+            <div className="flex justify-between py-6 border-b">
+              <div className="flex ">
+                <i className="bi bi-info-circle w-10 h-10 flex justify-center items-center text-center text-2xl text-sky-400 bg-sky-100 rounded-full mr-3"></i>
+                <label>
+                  <span className="font-medium">Make it special</span>
+                  <p className="text-xs text-slate-300"><i className="bi bi-fire"></i>Describe the details of your order in text - not required</p>
+                  <textarea value={details} onChange={handleChange} name="details" id="details" placeholder='Enter details here' className='mr-10 border outline-none w-full mt-2 px-4 py-2 resize-y text-sm text-neutral-600 rounded-md'></textarea>
+                </label>
+                
+              </div>
+            </div>
             <div className="border-b">
               <h4 className="flex items-center shadow-sm py-2 my-2 rounded-md">
                 <i className="bi bi-cart w-10 h-10 flex justify-center items-center text-center text-2xl text-sky-400 bg-sky-100 rounded-full mr-3"></i>
@@ -410,7 +427,7 @@ const handleButtonClick = async () => {
                 <span className="text-slate-700 font-bold">{cartItems.length}</span>
               </div>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-gray-600">Tax Rate (VAR):</span>
+                <span className="text-gray-600">Tax :</span>
                 <span className="text-green-500">RF 0.00</span>
               </div>
               <div className="flex justify-between items-center mb-4">

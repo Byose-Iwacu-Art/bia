@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { PasswordChangeModal } from "../../forms/change_password";
 
 const PersonalDetails = () => {
    
@@ -13,6 +14,8 @@ const PersonalDetails = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [changePassword, setChangePassword] = useState(false);
+
   const getUserIdFromSession = (): string | null => {
     try {
         const session = JSON.parse(localStorage.getItem("userSession") || "null");
@@ -86,7 +89,7 @@ const [userId, setUserId] = useState<string | null>(getUserIdFromSession());
       alert(result.message); // Display success message
     } catch (error: any) {
         console.error(error);
-        alert(error.message || "An unexpected error occurred. Please try again.");
+        alert(error.message || "An unexpected error occurorange. Please try again.");
     } finally {
         setIsSubmitting(false);
     }
@@ -97,7 +100,7 @@ const [userId, setUserId] = useState<string | null>(getUserIdFromSession());
       <h4 className="text-xl font-semibold">Personal informations</h4>
       <div className="py-8 w-full">
         <div className="flex flex-wrap items-center space-x-10">
-          <div className="p-1 border-2 border-red-400 w-20 h-20 rounded-full">
+          <div className="p-1 border-2 border-orange-400 w-20 h-20 rounded-full">
             <img
               src="/profile_avatar.jpg"
               alt=""
@@ -106,9 +109,16 @@ const [userId, setUserId] = useState<string | null>(getUserIdFromSession());
           </div>
           <label
             htmlFor="updateProfilePicture"
-            className="py-2 px-4 bg-red-300 text-white rounded-lg cursor-pointer"
+            className="py-2 px-4 bg-orange-300 text-white rounded-lg cursor-not-allowed"
           >
             <i className="bi bi-trash mr-1"></i> Delete
+          </label>
+          <label
+            htmlFor="updateProfilePicture"
+            onClick={() => setChangePassword(true)}
+            className="py-2 px-4 bg-emerald-300 text-white rounded-lg cursor-pointer"
+          >
+            <i className="bi bi-key mr-1"></i> Change Password
           </label>
         </div>
 
@@ -231,7 +241,7 @@ const [userId, setUserId] = useState<string | null>(getUserIdFromSession());
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className={`py-3 px-4 bg-red-300 text-white w-full md:w-[15vw] rounded-lg ${
+                  className={`py-3 px-4 bg-orange-300 text-white w-full md:w-[15vw] rounded-lg ${
                     isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 >
@@ -242,6 +252,7 @@ const [userId, setUserId] = useState<string | null>(getUserIdFromSession());
           </div>
         )}
       </div>
+      {changePassword && (<PasswordChangeModal onClose={() => setChangePassword(false)}/>)}
     </div>
   );
 };

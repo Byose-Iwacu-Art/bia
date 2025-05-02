@@ -65,7 +65,7 @@ export default function RootLayout({
           // Default layout
           <>
             <NavBar />
-            <main className="sm:mt-[120px] sm:mb-[20px] mt-[60px]">
+            <main className="sm:mt-[140px] sm:mb-[20px] mt-[60px]">
               {/* Show Preloader while main content is loading */}
               <div className="relative">
                 {isLoading ? (

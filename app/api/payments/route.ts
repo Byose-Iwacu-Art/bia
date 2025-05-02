@@ -72,7 +72,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18) 
         RETURNING *
       `;
-      const message = "Your payment has been processed successfully. Your order is now being processed.";
+      const message = "Your payment has been initiated successfully, Please follow the instruction to complete the payment";
 
       const insertValues = [
         transaction_id,
@@ -98,17 +98,16 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       if (!client) {
         throw new Error("Database client is not initialized.");
       }
-      const invoice = `INSERT INTO invoices (user_id, order_number, transaction_id, status, created_at) VALUES(
-      $1, $2, $3, $4, $5)`;
+      
       const result = await client.query(insertUserSql, insertValues);
-      await client.query(invoice, [Number(user_id), Number(orderNumber), transaction_id, "Unpaid", created_at]);
-      await sendInvoice(email, status, name, orderNumber, amount, "");
-      await sendOrderPaymentsEmail(email, status, name, orderNumber, amount, message);
+
+      await sendInvoice(email, status, name, orderNumber, amount);
+      await sendOrderPaymentsEmail(Number(tx_ref), email, status, name, orderNumber, amount, message);
+
       return NextResponse.json(
         {
           message: "Payment initiated successfull! Check OTP sent on SMS and complete payment!",
           user: result.rows[0],
-          redirect: response.meta.authorization.redirect,
         },
         { status: 200 }
       );

@@ -1,10 +1,11 @@
 "use client"; // Make sure this is at the top of the file
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import AlertNotification from '../nav/notify';
+import { EmailVerifyModal } from './verify';
 
 const LoginForm: React.FC = () => {
     const router = useRouter();
@@ -16,6 +17,8 @@ const LoginForm: React.FC = () => {
     const [isSuccess, setIsSuccess] = useState(false);
     const [isError, setIsError] = useState(false);
     const [loading, setLoading] = useState(false); // Add loading state
+    const [forgot, setForgot] = useState(false);
+    const [verify, setVerify] = useState<string | null>(null);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -48,7 +51,12 @@ const LoginForm: React.FC = () => {
             setResponseMessage(response.data.message || "Login successfully!");
             setIsSuccess(true);
             setIsError(false);
-            router.push('/');
+            if(response.data.user.status === "Pending"){
+                setVerify(formData.userName);
+            } else {
+               router.push('/'); 
+            }
+            
         } catch (error: unknown) {
             if (axios.isAxiosError(error)) {
                 setResponseMessage(error.response?.data.message || "Login failed due to server error.");
@@ -99,9 +107,9 @@ const LoginForm: React.FC = () => {
                     className='flex items-center justify-center font-bold text-sm py-3 rounded-3xl border w-full my-2 text-white bg-orange-400'
                     disabled={loading}
                     >{loading ? 'Logging in...' : <>Sign in <i className="bi bi-arrow-right ml-2"></i></>}</button>
-                    <div className='flex items-center justify-center font-semibold py-2 text-sm rounded-3xl border w-full my-2  border-slate-400 bg-white'><img src="/icons/google-logo.png" alt="" className='w-[30px] h-[30px] object-contain mr-3'/> Sign in with Google</div>
                 </div>
-                <div className='flex justify-self-center text-sm'>
+                <div className='flex justify-between text-sm px-3'>
+                    <button type='button' className='text-sky-600' onClick={() => setForgot(true)}>Forgot password?</button>
                     <span>Not a member? <Link href="/auth/register" onClick={()=> window.location.assign("/auth/register")} className='text-orange-500 font-bold'>Create account</Link></span>
                 </div>
             </form>
@@ -120,7 +128,8 @@ const LoginForm: React.FC = () => {
             
           </div>
         </div>
-        
+        {forgot && (<EmailVerifyModal onClose={() => setForgot(false)} event='forgot' emailOpt=''/>)}
+        {verify && (<EmailVerifyModal onClose={() => setVerify(null)} event='account' emailOpt={verify}/>)}     
     </>
     );
 };

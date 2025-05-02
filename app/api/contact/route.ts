@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import client from '../db';
+import { sendContactUsEmail } from "../utils/config";
 
 // Register a new user
 export async function POST(req: NextRequest): Promise<NextResponse> {
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         `;
         const insertValues = [name, email, phone, message, created_at, status];
         const result = await client.query(insertUserSql, insertValues);
-
+        await sendContactUsEmail (email, name, phone, message);
         return NextResponse.json({ message: "Message sent", user: result.rows[0] }, { status: 201 });
     } catch (error) {
         console.error("Error during sending:", error);

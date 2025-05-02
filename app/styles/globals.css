@@ -267,8 +267,8 @@ footer .container {
         width: 100%;
         background-color: white;
         z-index: 1000;
-        border-top: 2px solid #ffebb0;
-        padding: 10px 15px;
+        border-top: 2px solid #e0e0e0;
+        padding: 4px 15px;
         display: flex;
         align-items: center;
       }
@@ -286,7 +286,7 @@ footer .container {
       .small-device-menu i {
         display: block;
         font-size: 25px;
-        color: #7c4e1a;
+        color: #ffb330;
       }
     
       .small-device-menu span {
