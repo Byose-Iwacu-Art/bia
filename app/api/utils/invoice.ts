@@ -161,12 +161,12 @@ export async function sendInvoice( email: string, products: any, name: string, o
 
 </body>
 </html>`;
-sendSmtpEmail.sender = { "name": "BIA(Byose Iwacu Art)", "email": "codereveur@gmail.com" };
+sendSmtpEmail.sender = { "name": "Byose Iwacu Art ", "email": "clients@biafricantouch.com" };
 sendSmtpEmail.to = [
   { "email": email, "name": name },
-  { "email": "hacketrich@gmail.com", "name": "Commercial Officer" },
+  { "email": "joe@biafricantouch.com", "name": "Chief Technical & Commercial Officer" },
 ];
-sendSmtpEmail.replyTo = { "email": "giselumutoni@gmail.com", "name": "Bia Support Team" };
+sendSmtpEmail.replyTo = { "email": "clients@biafricantouch.com", "name": "Bia Support Team" };
 sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
 sendSmtpEmail.params = { "parameter": "My param value", "subject": "common subject" };
 

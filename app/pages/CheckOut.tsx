@@ -86,6 +86,10 @@ const Checkout = ({ onAddLocationClick}: CheckOutProps) => {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
+  const clearCart = () => {
+    localStorage.removeItem('cart'); // Clear from localStorage
+  };
+
   const calculateTotal = () => {
     let total = cartItems.reduce((acc, item) => acc + item.price * item.amount, 0).toFixed(2);
     //setTotalPrice(""+total);
@@ -201,6 +205,7 @@ const handleCheckout = async () => {
       const data = await response.json();
       setOrderNumber(data.order.order_number);
       setLoading(false)
+      clearCart();
       //handle payments
       handleOpenPayment();
     } else {

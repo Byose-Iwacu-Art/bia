@@ -44,9 +44,7 @@ const Pay: React.FC<PayProps> = ({
     }
     }, [responseMessage]);
       // Clear the cart
-  const clearCart = () => {
-    localStorage.removeItem('cart'); // Clear from localStorage
-  };
+
     const handlePayment = async () => {
         setLoading(true);
         try {
@@ -72,7 +70,6 @@ const Pay: React.FC<PayProps> = ({
                 setMessageType('success');
                 setResponseMessage(data.message);
                 setLink(data.paymentLinkUrl);
-                clearCart();
                 setLoading(false);
             } else {
                 setResponseMessage(data.message);

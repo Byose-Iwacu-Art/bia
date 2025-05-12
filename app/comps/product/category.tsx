@@ -94,11 +94,11 @@ const Category: React.FC = () => {
       </div>
       <div className="w-full lg:px-1">
   {/* First Row of Categories */}
-  <div className="grid grid-cols-2 sm:grid-cols-6 md:grid-cols-7 gap-4 p-3">
+  <div className="grid grid-cols-2 sm:grid-cols-6 md:grid-cols-7 gap-1 p-3">
     {categoriez.map((cat,key) => (
-     <div key={key} className="flex flex-col bg-white p-2 shadow-md rounded-lg hover:shadow-lg transition-transform transform hover:scale-80">
+     <div key={key} className="flex flex-col bg-white p-2 shadow rounded-lg hover:shadow-lg transition-transform transform hover:scale-80">
      <div className="w-full h-20 mb-2">
-       <img src={cat.avatar} alt={""} className='w-full h-full object-contain rounded-lg' />
+       <img src={cat.avatar} alt={""} className='w-full h-full object-cover rounded-lg' />
      </div>
      <Link href={`/products/category/${cat.cat_name}`} onClick={() => window.location.assign(`/products/category/${cat.cat_name}`)} className='flex flex-col'>
        <div className="name text-black text-sm md:text-base font-semibold truncate">{cat.cat_name}</div>

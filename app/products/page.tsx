@@ -250,7 +250,7 @@ const Home = () => {
                             </div>
                         </div>
                         {products.length > 0 ? (
-                            <ProductList products={products} itemsPerPage={38} sortPage=""/> 
+                            <ProductList products={products} itemsPerPage={42} sortPage=""/> 
                         ) : (
                          <div className="h-[30vh] w-[30vw] text-red-500 flex justify-center items-center">No products found</div>
                         )}

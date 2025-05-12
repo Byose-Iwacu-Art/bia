@@ -94,7 +94,7 @@ export default function Home() {
         </div>
       </div>
       <div className="py-4 px-5">
-        <ProductList products={products} itemsPerPage={18} sortPage={sort}/>
+        <ProductList products={products} itemsPerPage={21} sortPage={sort}/>
       </div>
     </>
   );

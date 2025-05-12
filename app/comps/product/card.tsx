@@ -45,20 +45,20 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, image, size, color,
   
   return (
     <div 
-     className="w-[47%] h-max sm:max-w-[60%] md:max-w-[45%] lg:max-w-[200px] py-1 sm:py-2 md:py-3 lg:py-3 px-2 rounded-sm overflow-hidden shadow-md bg-white text-center mx-auto sm:mx-auto md:mx-auto lg:mx-1 my-2 hover:shadow-xl"
+     className="w-full h-max py-1 sm:py-2 md:py-3 lg:py-3 px-2 rounded-sm overflow-hidden shadow-xs bg-white text-center mx-auto sm:mx-auto md:mx-auto lg:mx-1 my-2 hover:shadow-xl"
     >
-      <div className="w-full h-[140px] cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
-          <img className="w-full h-full object-contain" src={image || "/no_image.jpeg"} alt={""} />
+      <div className="w-full h-[30vh] p-1 cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
+          <img className="w-full h-full object-cover" src={image || "/no_image.jpeg"} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
         <Link href={`/products/${hashed_id}`} onClick={() => window.location.assign(`/products/${hashed_id}`)}>
-          <div className="text-base text-gray-700">{name}</div>
+          <div className="text-base text-gray-900">{name}</div>
         </Link>
 
         <div className={`flex flex-col justify-between`}>
-          <span className="font-medium">
-            {new Intl.NumberFormat("en-US").format(Number(price))} RWF
+          <span className="font-bold text-lg">
+            <span className="text-xs">RWF</span>{new Intl.NumberFormat("en-US").format(Number(price))} 
           </span>
 
           <button
@@ -108,9 +108,9 @@ const FlashCard: React.FC<ProductCardProps> = ({ id, name, image, size, color, p
     <div 
      className="w-[45vw] h-max sm:w-[200px] py-1 sm:py-2 md:py-3 lg:py-3 px-2 rounded-sm overflow-hidden shadow-md bg-white text-center mx-auto sm:mx-auto md:mx-auto lg:mx-1  hover:shadow-xl"
     >
-      <div className="w-full h-[140px] cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
+      <div className="w-full h-[30vh] p-1 cursor-pointer  rounded-md" onClick={() => window.location.assign(`/products/${hashed_id}`)}>
           <div className="absolute text-left bg-red-500 text-sm text-white flex items-center p-1 font-medium rounded">{"-"+size+"%"}</div>
-          <img className="w-full h-full object-contain" src={image} alt={""} />
+          <img className="w-full h-full object-cover" src={image} alt={""} />
       </div>
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
@@ -120,7 +120,7 @@ const FlashCard: React.FC<ProductCardProps> = ({ id, name, image, size, color, p
        
         <div className={`flex flex-col justify-between`}>
           <span className="font-medium text-red-500 text-lg">
-            {new Intl.NumberFormat("en-US").format(Number(discountPrice))} RWF
+            RWF{new Intl.NumberFormat("en-US").format(Number(discountPrice))} 
           </span>
 
           <button

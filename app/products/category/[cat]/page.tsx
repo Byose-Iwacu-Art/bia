@@ -2,9 +2,18 @@
 import { useEffect, useState } from "react";
 import ProductList from "@/app/pages/ProductList";
 import Preloader from "@/app/comps/forms/PreDivLoader";
-import Promotions from "@/app/comps/product/promotions";
 import FlashSales from "@/app/comps/product/flashsale";
 
+const decodeUrlText = (url: string) => {
+  // Decode special characters like %20 (space), %60 (backtick), etc.
+  const decoded = decodeURIComponent(url);
+
+  // Optional: replace backticks (`) with apostrophes (') if needed
+  const cleaned = decoded.replace(/`/g, "'");
+
+  // Remove leading slash if present
+  return cleaned.replace(/^\/+/, '');
+};
 
 export default function Home ({ params }: { params: { cat: string } }) {
     const [loading, setLoading] = useState(false);
@@ -70,14 +79,14 @@ export default function Home ({ params }: { params: { cat: string } }) {
     return (
         <>
             <head>
-                <title>{String(params.cat)}</title>
+                <title>{decodeUrlText(params.cat)}</title>
             </head>
             <div className="px-5 py-3 bg-slate-50">
                 <FlashSales />
             </div>
             <div>
                 <h1 className="px-5 py-4 font-bold text-lg text-red-400">
-                    Products <i className="bi bi-chevron-right text-xs text-cyan-500"></i>
+                    {decodeUrlText(params.cat)} <i className="bi bi-chevron-right text-xs text-cyan-500"></i>
                 </h1>
             </div>
             <div className="w-full h-full flex px-4">
@@ -173,7 +182,7 @@ export default function Home ({ params }: { params: { cat: string } }) {
                             </div>
                         </div>
                         {products.length > 0 ? (
-                            <ProductList products={products} itemsPerPage={38} sortPage=""/> 
+                            <ProductList products={products} itemsPerPage={42} sortPage=""/> 
                         ) : (
                          <div className="h-[30vh] w-[30vw] text-red-500 flex justify-center items-center">No products found</div>
                         )}

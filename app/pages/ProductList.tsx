@@ -47,7 +47,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, itemsPerPage, sortP
   return (
     <>
       {/* Render current page products */}
-      <div className="flex flex-wrap justify-evenly gap-1">
+      <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 gridgap-1">
         {currentProducts.map((item) => (
           <ProductCard
             key={item.id}
