@@ -19,6 +19,7 @@ interface Product {
   colors: string[];
   delivery_days: number;
   hashed_id: string;
+  promotion: number;
 }
 
 const Search = () => {
@@ -92,6 +93,7 @@ const Search = () => {
             color=""
             size=""
             hashed_id={item.hashed_id}
+            promotion={item.promotion}
             />
         ))}
     </div>
