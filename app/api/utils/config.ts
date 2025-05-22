@@ -227,8 +227,8 @@ export async function sendOrderPaymentsEmail( invoiceNumber: number, email: stri
            ${payment_status}
           </span>
         </p>
-        <p>Payment link:  <a href='https://checkout.sandbox.irembopay.com/${invoiceNumber}'>https://checkout.sandbox.irembopay.com/${invoiceNumber}</a></p>
-        <p>Invoice number:  ${invoiceNumber} <a href='https://checkout.sandbox.irembopay.com/${invoiceNumber}'>Download</a></p>
+        <p>Payment link:  <a href='https://checkout.irembopay.com/${invoiceNumber}'>https://checkout.irembopay.com/${invoiceNumber}</a></p>
+        <p>Invoice number:  ${invoiceNumber} <a href='https://checkout.irembopay.com/${invoiceNumber}'>Download</a></p>
         <p>Order Number: ${order_number}</p>
         <p>Amount to pay: ${amount}RWF</p>
         <a href="https://biafricantouch.com/dash/orders/${order_number}" class="button">View Order</a>
@@ -804,9 +804,9 @@ export async function sendVerificationCodeEmail(email: string, name: string, ver
     </div>
   </div>`;
 
-  sendSmtpEmail.sender = { "name": "BIA (Byose Iwacu Art)", "email": "codereveur@gmail.com" };
+  sendSmtpEmail.sender = { "name": "Byose Iwacu Art - BIA", "email": "clients@biafricantouch.com" };
   sendSmtpEmail.to = [{ "email": email, "name": name }];
-  sendSmtpEmail.replyTo = { "email": "giselumutoni@gmail.com", "name": "Bia Support Team" };
+  sendSmtpEmail.replyTo = { "email": "support@biafricantouch.com", "name": "Bia Support Team" };
   sendSmtpEmail.headers = { "Some-Custom-Name": "unique-id-1234" };
 
   apiInstance.sendTransacEmail(sendSmtpEmail).then(

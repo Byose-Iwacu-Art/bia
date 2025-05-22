@@ -3,7 +3,7 @@ import Ads from "../comps/nav/ads";
 import Link from "next/link";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import Image from "next/image";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CartDropdown from "../comps/nav/cart";
 import { redirect } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -24,7 +24,8 @@ const NavBar = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
-  const router = useRouter()
+  const wrapperRef = useRef(null);
+    
   // Load initial cart items and user session
   useEffect(() => {
     const handleScroll = () => {
@@ -70,6 +71,16 @@ const NavBar = () => {
       redirect(href);
     }
   }
+    useEffect(() => { 
+    const handleClickOutside = (event: MouseEvent) => {
+      if (wrapperRef.current && !(wrapperRef.current as any).contains(event.target)) {
+        setIsCartOpen(false);
+        setIsOpen(false);    
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
   const links = [
     { href: "/", icon: "bi-house-fill", text: "Home" },
     { href: "/products", icon: "bi-bag-fill", text: "Products" },
@@ -147,7 +158,7 @@ const NavBar = () => {
 
             {/* Cart Dropdown */}
             {isCartOpen && (
-              <div className="absolute right-[-70px] mt-3 w-80 bg-white shadow-2xl rounded-lg overflow-hidden z-50">
+              <div ref={wrapperRef} className="absolute right-[-70px] mt-3 w-80 bg-white shadow-2xl rounded-lg overflow-hidden z-50">
                 <CartDropdown setCartItem={setCartItems} onClose={() => setIsCartOpen(!isCartOpen)}/>
               </div>
             )}
@@ -161,7 +172,7 @@ const NavBar = () => {
                 </div>
                 
                 {isOpen && (
-                  <div className="absolute right-0 top-12 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden z-50">
+                  <div ref={wrapperRef} className="absolute right-0 top-12 mt-2 w-40 bg-white rounded-lg shadow-xl overflow-hidden z-50">
                     <ul className="flex flex-col py-2 px-3 space-y-2">
                       <li className="flex items-center p-1 rounded-lg hover:bg-gray-100 transition-all">
                         <i className="bi bi-person mr-2 text-lg text-green-500"></i>
@@ -176,8 +187,8 @@ const NavBar = () => {
                 )}
               </div>
             ) : (
-              <Link href="/auth/login" onClick={() => redirect("/auth/login")} className="flex bg-slate-200 py-1 px-5 rounded-lg text-base text-nowrap">
-                Sign in
+              <Link href="/auth/login" onClick={() => redirect("/auth/login")} className="flex flex-nowrap bg-slate-200 py-1 px-5 rounded-lg text-base text-nowrap">
+                Sign In
               </Link>
             )}
           </div>

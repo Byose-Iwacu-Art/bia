@@ -52,7 +52,7 @@ if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
         const notification = `INSERT INTO notification(content_text, user_id, event, system, view, action_required, admin, mailed, sms, created_at) VALUES($1, $2, $3, $4, $5, $6, $7, 'yes', 'no', NOW())`;
         await client.query(notification, [message, user.id, "Security and Privacy", "true", "Unread", `/dash/profile`, "Unread"])
 
-        await sendActivityEmail(user.email, user.name, message);
+        await sendActivityEmail(user.email, user.first_name, message);
         // Send response with user data and session ID
         return NextResponse.json({
             message: "Login successful!",

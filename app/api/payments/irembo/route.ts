@@ -79,7 +79,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         {
       unitAmount: amount,
       quantity: 1,
-      code: "PC-c6d002caca",
+      code: "PC-354118dd3e",
       },
     ];
 
@@ -93,13 +93,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     //data object to pass to irembo pay
     const data: InvoiceData = {
       transactionId: transaction_id.toString(),
-      paymentAccountIdentifier: "DEVMOMO",
+      paymentAccountIdentifier: "BYOSE_IWACU_RWF",
       customer: customer,
       paymentItems: paymentItem,
       description: details,
       expiryAt: formatDate(created_at),
       language: "EN",
-      callBackUrl: "https://biafricantouch.com"
+      callBackUrl: "https://www.biafricantouch.com/checkout/result"
     };
 
     const response = await iPay.invoice.createInvoice(JSON.stringify(data));
