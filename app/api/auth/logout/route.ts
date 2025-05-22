@@ -14,10 +14,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         const updateSql = "UPDATE sessions SET logout_date = NOW() WHERE session_id = $1 RETURNING *";
         const result = await client.query(updateSql, [sessionId]);
 
-        if (result.rowCount === 0) {
-            return NextResponse.json({ message: "Session not found." }, { status: 404 });
-        }
-
         return NextResponse.json({ message: "Logout successful." }, { status: 200 });
     } catch (error) {
         console.error("Logout error:", error);
