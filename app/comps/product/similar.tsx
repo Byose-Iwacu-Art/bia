@@ -63,7 +63,7 @@ const Similar = ({ id }: { id: string }) => {
     return (
         <>
             <h1 className="font-semibold text-2xl text-slate-500 pb-3">Similar products</h1>
-            <ProductList products={products} itemsPerPage={18} sortPage=""/>
+            <ProductList products={products} itemsPerPage={21} sortPage=""/>
         </>
     );
 }
