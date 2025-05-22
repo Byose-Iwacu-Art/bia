@@ -56,7 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ id, name, image, size, color,
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
         <Link href={`/products/${hashed_id}`} onClick={() => window.location.assign(`/products/${hashed_id}`)}>
-          <div className="text-base text-gray-900">{name}</div>
+          <div className="text-base text-gray-900 capitalize">{name}</div>
         </Link>
 
         <div className={`flex flex-col justify-between`}>
@@ -121,7 +121,7 @@ const FlashCard: React.FC<ProductCardProps> = ({ id, name, image, size, color, p
      
       <div className="px-3 pt-2 pb-1 flex flex-col">
         <Link href={`/products/${hashed_id}`} onClick={() => window.location.assign(`/products/${hashed_id}`)}>
-          <div className="text-base text-gray-700">{name}</div>
+          <div className="text-base text-gray-700 capitalize">{name}</div>
         </Link>
        
         <div className={`flex flex-col justify-between`}>
