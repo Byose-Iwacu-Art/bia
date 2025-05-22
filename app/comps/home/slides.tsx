@@ -13,7 +13,7 @@ const slides = [
   { image: '/imgs/rm/c2-removebg-preview.png', text: 'Discover the Elegance of Rwandan Fashion', description: 'Discover the architecture made by Rwandan on this cloth as the result of culture dress', reference: '/products/category/Women Dress', category: 'Outfits'},
   { image: '/imgs/rm/cat9-removebg-preview.png', text: 'Handcrafted Baskets with a Touch of Tradition', description: 'Discover the architecture made by Rwandan on this clothing', reference: '/products/category/Men Shirts', category: 'Home Made Decoration'},
   { image: '/imgs/rm/d7-removebg-preview.png', text: 'Learn the Art of Tailoring with Us', description: 'Discover the architecture made by Rwandan on this cloth as the result of culture Clothing', reference: 'tailors.kamero.rw', category: 'Tailors Dream College'},
-  { image: '/imgs/rm/cat20-removebg-preview.png', text: 'Discover the Elegance of Rwandan Fashions', description: 'Discover the architecture made by Rwandan on this cloth as the result of culture Matts', reference: '/products/category/Table Matt', category: 'Women Dressing'},
+  { image: '/imgs/rm/cat20-removebg-preview.png', text: 'Discover the Elegance of Rwandan Fashions', description: 'Discover the architecture made by Rwandan on this cloth as the result of culture Matts', reference: '/products/category/Table Matt', category: 'Craftsmanship'},
 ];
 
 const SlideShow: NextPage = () => {
