@@ -19,6 +19,7 @@ interface Product {
   image: string;
   description: string;
   hashed_id: string;
+  promotion: number;
 }
 
 export default function Home() {
