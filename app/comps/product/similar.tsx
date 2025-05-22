@@ -15,6 +15,7 @@ interface Product {
     image: string;
     description: string;
     hashed_id: string;
+    promotion: number;
   }
 
 const Similar = ({ id }: { id: string }) => {

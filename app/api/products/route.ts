@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const size = searchParams.get("size") || "";
     const sort = searchParams.get("sortPage") || "";
 
-    let sql = "SELECT * FROM products WHERE status = 'Active' ";
+    let sql = "SELECT p.*, pr.promotion FROM products p LEFT JOIN promotion pr ON pr.product_id = p.id::text WHERE p.status = 'Active' ";
     const params: (string | number)[] = [];
 
     // Filtering logic

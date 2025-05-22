@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from 'react';
-import Head from "next/head";
 import Preloader from "@/app/comps/forms/PreDivLoader";
 import Item from "@/app/comps/product/item";
 import Similar from "@/app/comps/product/similar";
@@ -21,6 +20,7 @@ interface Product {
     sizes: string;
     delivery_days: number;
     hashed_id: string;
+    promotion: number;
 }
 
 // The new way to handle dynamic route params in Next.js 13

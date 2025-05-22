@@ -15,6 +15,7 @@ interface Product {
   image: string;
   description: string;
   hashed_id: string;
+  promotion: number;
 }
 
 interface ProductListProps {
@@ -59,6 +60,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, itemsPerPage, sortP
             color={item.colors}
             image={item.image}
             hashed_id={item.hashed_id}
+            promotion={item.promotion}
           />
         ))}
       </div>

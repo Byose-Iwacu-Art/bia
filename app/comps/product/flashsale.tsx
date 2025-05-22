@@ -13,6 +13,7 @@ interface Product {
   image: string;
   hashed_id: string;
   price: string;
+  promotion: number;
 }
 
 const FlashSales =  () => {
@@ -100,6 +101,7 @@ useEffect(() => {
                  details=""
                  color=""
                  size={item.discount}
+                 promotion={item.promotion}
                 /></>
               </SwiperSlide>
             ))}

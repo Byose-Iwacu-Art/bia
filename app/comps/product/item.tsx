@@ -19,6 +19,7 @@ interface Product {
     colors: string[];
     sizes: string;
     delivery_days: number;
+    promotion: number;
     
 }
 

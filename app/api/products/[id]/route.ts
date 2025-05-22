@@ -10,7 +10,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     try {
         // Fetch product details
-        const productResult = await client.query(`SELECT * FROM products WHERE hashed_id = $1`, [id]);
+        const productResult = await client.query(`SELECT p.*, pr.promotion FROM products p LEFT JOIN promotion pr ON pr.product_id = p.id::text WHERE hashed_id = $1`, [id]);
         // Fetch relational images
         const img_id = productResult.rows[0].id;
         const imagesResult = await client.query(
