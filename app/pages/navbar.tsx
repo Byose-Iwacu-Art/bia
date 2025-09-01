@@ -94,7 +94,7 @@ const NavBar = () => {
     <header className={`z-50 fixed top-0 bg-white w-full ${isHidden ? 'shadow' : 'shadow-sm'} border-b border-yellow-100 sm:border-0`}>
       {/* Ads panel */}
       <Ads>
-        <p className='text-slate-300 p-1 px-4'>We have launched Tailors College Dream, be one of the leading tailors across Africa!</p>
+        <p className='text-slate-300 p-1 px-4'>We have launched Tailors Dream College, be one of the leading tailors across Africa!</p>
         <a className='bg-green-400 text-white px-2 py-[4px] m-1 rounded cursor-pointer' href={"https://tailors.biafricantouch.com/apply"} target="_blank">Apply now</a>
       </Ads>
       {/*
