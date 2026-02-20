@@ -3,35 +3,51 @@ import React, { useEffect, useState, ReactNode } from 'react';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
 interface AdsProps {
-  children: ReactNode; // Define the type of children prop
+  children: ReactNode;
 }
 
-const Ads: React.FC<AdsProps> = (props) => {
-    const [isHidden, setIsHidden] = useState(false);
+const Ads: React.FC<AdsProps> = ({ children }) => {
+  const [isHidden, setIsHidden] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
 
-useEffect(() => {
-  const handleScroll = () => {
-    if (window.scrollY > 50) {
-      setIsHidden(true);
-    } else {
-      setIsHidden(false);
-    }
+  useEffect(() => {
+    const dismissed = sessionStorage.getItem('ads-dismissed') === 'true';
+    setIsDismissed(dismissed);
+
+    const handleScroll = () => {
+      setIsHidden(window.scrollY > 50);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const handleDismiss = () => {
+    setIsDismissed(true);
+    sessionStorage.setItem('ads-dismissed', 'true');
   };
 
-  window.addEventListener('scroll', handleScroll);
+  if (isDismissed) return null;
 
-  return () => {
-   window.removeEventListener('scroll', handleScroll);
-  };
-}, []);
+  return (
+    <div
+      className={`w-full bg-gradient-to-r from-orange-600 to-amber-500 transition-all duration-500 ease-in-out hidden sm:flex items-center justify-between px-4 py-[6px] ${
+        isHidden ? 'opacity-0 -translate-y-full h-0 overflow-hidden py-0' : 'opacity-100 translate-y-0'
+      }`}
+    >
+      <div className="flex-1 flex items-center justify-center gap-2 text-white text-[13px] font-medium">
+        <i className="bi bi-megaphone-fill text-white/80 text-base"></i>
+        <div className="flex items-center gap-2">{children}</div>
+      </div>
+      <button
+        onClick={handleDismiss}
+        aria-label="Dismiss"
+        className="text-white/70 hover:text-white transition-colors ml-3 text-lg leading-none"
+      >
+        <i className="bi bi-x-lg"></i>
+      </button>
+    </div>
+  );
+};
 
-    return (
-        <div className={`bg-red-400 w-full justify-center items-center transition-transform duration-500  ${isHidden ? '-translate-y-full fixed w-[95%] m-auto' : 'translate-y-0'} hidden sm:flex`}>
-            <i className="bi bi-megaphone text-red-100 text-2xl"></i>
-            <div className='flex items-center text-[14px]'>
-                {props.children}
-            </div>   
-        </div>
-    );
-}
 export default Ads;

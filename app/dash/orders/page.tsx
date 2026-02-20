@@ -1,26 +1,30 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Orders from "../../comps/dash/orders";
-import { useRouter } from 'next/navigation';
+import { useAuthModal } from "../../comps/auth/AuthModalContext";
 
 const Dashboard = () => {
-    const router = useRouter();
+    const [authed, setAuthed] = useState(false);
+    const { openLogin } = useAuthModal();
 
     useEffect(() => {
         const session = JSON.parse(localStorage.getItem('userSession') || 'null');
-        
         if (!session) {
-            router.push("/auth/login");
+            openLogin(() => setAuthed(true));
+        } else {
+            setAuthed(true);
         }
-    }, [router]); // Added `router` to dependency array
+    }, [openLogin]);
+
+    if (!authed) return null;
 
     return (
         <>
-        <title>Orders</title>
-        <div className="sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
-            <Orders />
-        </div>
+            <title>Orders</title>
+            <div className="min-h-screen">
+                <Orders />
+            </div>
         </>
     );
 };

@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 interface Location {
   country: string;
@@ -16,257 +17,195 @@ interface AddLocationProps {
   onClose: () => void;
 }
 
+const FIELDS: { key: keyof Location; label: string; placeholder: string; icon: string; required?: boolean }[] = [
+  { key: 'country',  label: 'Country',          placeholder: 'e.g. Rwanda',        icon: 'bi-globe2',       required: true },
+  { key: 'province', label: 'Province / State',  placeholder: 'e.g. Kigali',        icon: 'bi-map',          required: true },
+  { key: 'district', label: 'District',          placeholder: 'e.g. Gasabo',        icon: 'bi-pin-map',      required: true },
+  { key: 'sector',   label: 'Sector',            placeholder: 'e.g. Kimironko',     icon: 'bi-signpost',     required: true },
+  { key: 'cell',     label: 'Cell',              placeholder: 'e.g. Bibare',        icon: 'bi-building',     required: true },
+  { key: 'village',  label: 'Village',           placeholder: 'e.g. Inzovu',        icon: 'bi-house',        required: true },
+  { key: 'street1',  label: 'Address line 1',    placeholder: 'Street or road name',icon: 'bi-geo-alt',      required: true },
+  { key: 'street2',  label: 'Address line 2',    placeholder: 'Apt, floor, nearby landmark (optional)', icon: 'bi-geo' },
+];
+
 const AddLocation = ({ onClose }: AddLocationProps) => {
-  const [newLocation, setNewLocation] = useState<Location>({
-    country: "",
-    province: "",
-    district: "",
-    sector: "",
-    cell: "",
-    village: "",
-    street1: "",
-    street2: "",
+  const [location, setLocation] = useState<Location>({
+    country: '', province: '', district: '', sector: '',
+    cell: '', village: '', street1: '', street2: '',
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const update = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewLocation({ ...newLocation, [name]: value });
+    setLocation(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors(prev => { const n = { ...prev }; delete n[name]; return n; });
   };
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    if (!newLocation.country) newErrors.country = "Country is required";
-    if (!newLocation.province) newErrors.province = "Province is required";
-    if (!newLocation.district) newErrors.district = "District is required";
-    if (!newLocation.sector) newErrors.sector = "Sector is required";
-    if (!newLocation.cell) newErrors.cell = "Cell is required";
-    if (!newLocation.village) newErrors.village = "Village is required";
-    if (!newLocation.street1) newErrors.street1 = "Address line 1 is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+  const validate = () => {
+    const errs: Record<string, string> = {};
+    FIELDS.filter(f => f.required).forEach(f => {
+      if (!location[f.key].trim()) errs[f.key] = `${f.label} is required`;
+    });
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateForm()) return;
-
+    if (!validate()) return;
     setLoading(true);
     setMessage(null);
 
-    // Get user ID from localStorage
     const userSession = JSON.parse(localStorage.getItem('userSession') || '{}');
     const userId = userSession.id;
-
     if (!userId) {
-      setMessage("User is not logged in.");
+      setMessage({ text: 'You are not logged in.', ok: false });
       setLoading(false);
       return;
     }
 
-    const locationData = { ...newLocation, id: userId };
-
     try {
-      const response = await fetch("/api/auth/address", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(locationData),
+      const res = await fetch('/api/auth/address', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...location, id: userId }),
       });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || 'Error saving location');
 
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || "Error adding location");
-      }
-
-      setMessage("Location added successfully ✅");
-      setNewLocation({
-        country: "",
-        province: "",
-        district: "",
-        sector: "",
-        cell: "",
-        village: "",
-        street1: "",
-        street2: "",
-      });
-    } catch (error:any) {
-      console.error("Error adding location:", error);
-      setMessage(error.message);
+      setMessage({ text: 'Location saved successfully!', ok: true });
+      setLocation({ country: '', province: '', district: '', sector: '', cell: '', village: '', street1: '', street2: '' });
+    } catch (err: any) {
+      setMessage({ text: err.message, ok: false });
     } finally {
       setLoading(false);
     }
   };
 
+  // Pair fields for 2-col grid rows: [country,province], [district,sector], [cell,village]
+  const gridPairs = [
+    [FIELDS[0], FIELDS[1]],
+    [FIELDS[2], FIELDS[3]],
+    [FIELDS[4], FIELDS[5]],
+  ];
+  const fullWidthFields = [FIELDS[6], FIELDS[7]];
+
   return (
-    <div className="fixed flex justify-center items-center bg-slate-300 w-full h-full top-0 left-0 z-50 backdrop-blur-sm bg-opacity-40">
-      <i
-        className="bi bi-x absolute right-4 p-1 top-7 text-4xl font-bold cursor-pointer hover:bg-slate-50 hover:border rounded-full"
-        onClick={onClose}
-      ></i>
-      <div className="max-w-2xl w-full rounded-xl px-6 py-3 bg-white border shadow-md">
-        <h4 className="text-lg font-semibold text-slate-700 pb-3 pt-1 text-center">
-          Add New Location
-        </h4>
-        {/* Success or Error Message */}
-        {message && (
-            <div
-              className={`my-4 py-2 px-4 rounded-lg${
-                message.includes("successfully") ? "bg-green-100 text-green-600" : "bg-red-200 text-red-500"
-              }`}
-            >
-              {message}
-            </div>
-          )}
-        <form className="flex justify-between" onSubmit={handleSubmit}>
-          <div className="w-[48%]">
-            {/* Country */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Country</label>
-              <input
-                type="text"
-                name="country"
-                value={newLocation.country}
-                onChange={handleInputChange}
-                placeholder="Country"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.country && (
-                <span className="text-red-500 text-xs">{errors.country}</span>
-              )}
-            </div>
+    <div
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-[2px]"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl rounded-t-2xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col">
 
-            {/* Province */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Province / State</label>
-              <input
-                type="text"
-                name="province"
-                value={newLocation.province}
-                onChange={handleInputChange}
-                placeholder="Province or state"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.province && (
-                <span className="text-red-500 text-xs">{errors.province}</span>
-              )}
+        {/* Dark header */}
+        <div className="bg-gray-900 px-6 py-4 flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
+              <i className="bi bi-geo-alt-fill text-white text-[13px]"></i>
             </div>
-
-            {/* District */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">District</label>
-              <input
-                type="text"
-                name="district"
-                value={newLocation.district}
-                onChange={handleInputChange}
-                placeholder="District"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.district && (
-                <span className="text-red-500 text-xs">{errors.district}</span>
-              )}
-            </div>
-
-            {/* Sector */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Sector</label>
-              <input
-                type="text"
-                name="sector"
-                value={newLocation.sector}
-                onChange={handleInputChange}
-                placeholder="Sector"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.sector && (
-                <span className="text-red-500 text-xs">{errors.sector}</span>
-              )}
+            <div>
+              <p className="text-white font-bold text-[15px] leading-tight">Add Delivery Location</p>
+              <p className="text-gray-400 text-[11px]">Where should we deliver?</p>
             </div>
           </div>
+          <button
+            onClick={onClose}
+            className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white/70 hover:text-white transition-colors"
+          >
+            <i className="bi bi-x-lg text-[12px]"></i>
+          </button>
+        </div>
 
-          <div className="w-[48%]">
-            {/* Cell */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Cell</label>
-              <input
-                type="text"
-                name="cell"
-                value={newLocation.cell}
-                onChange={handleInputChange}
-                placeholder="Cell"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.cell && (
-                <span className="text-red-500 text-xs">{errors.cell}</span>
-              )}
-            </div>
+        {/* Scrollable form */}
+        <div className="overflow-y-auto flex-1">
+          <form onSubmit={handleSubmit} className="px-6 py-5 space-y-4">
 
-            {/* Village */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Village</label>
-              <input
-                type="text"
-                name="village"
-                value={newLocation.village}
-                onChange={handleInputChange}
-                placeholder="Village"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.village && (
-                <span className="text-red-500 text-xs">{errors.village}</span>
-              )}
-            </div>
+            {/* Status message */}
+            {message && (
+              <div className={`flex items-start gap-2 px-4 py-2.5 rounded-xl text-[13px] border ${
+                message.ok
+                  ? 'bg-emerald-50 border-emerald-100 text-emerald-700'
+                  : 'bg-red-50 border-red-100 text-red-600'
+              }`}>
+                <i className={`bi ${message.ok ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'} flex-shrink-0 mt-0.5`}></i>
+                <span>{message.text}</span>
+              </div>
+            )}
 
-            {/* Address line 1 */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Address line 1</label>
-              <input
-                type="text"
-                name="street1"
-                value={newLocation.street1}
-                onChange={handleInputChange}
-                placeholder="Address line 1"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-              {errors.street1 && (
-                <span className="text-red-500 text-xs">{errors.street1}</span>
-              )}
-            </div>
+            {/* 2-col pairs */}
+            {gridPairs.map((pair, pi) => (
+              <div key={pi} className="grid grid-cols-2 gap-3">
+                {pair.map(({ key, label, placeholder, icon, required }) => (
+                  <div key={key}>
+                    <label className="block text-[12px] font-medium text-gray-500 mb-1.5">
+                      {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+                    </label>
+                    <div className="relative">
+                      <i className={`bi ${icon} absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-[12px] pointer-events-none`}></i>
+                      <input
+                        type="text"
+                        name={key}
+                        value={location[key]}
+                        onChange={update}
+                        placeholder={placeholder}
+                        className={`w-full pl-8 pr-3 py-2.5 border rounded-xl text-[13px] outline-none transition-all ${
+                          errors[key]
+                            ? 'border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100'
+                            : 'border-gray-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-100'
+                        }`}
+                      />
+                    </div>
+                    {errors[key] && (
+                      <p className="text-[11px] text-red-500 mt-1">{errors[key]}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ))}
 
-            {/* Address line 2 */}
-            <div className="flex flex-col">
-              <label className="text-sm text-slate-700">Address line 2</label>
-              <input
-                type="text"
-                name="street2"
-                value={newLocation.street2}
-                onChange={handleInputChange}
-                placeholder="Address line 2"
-                className="border py-2 px-4 rounded-lg text-sm outline-none"
-              />
-            </div>
+            {/* Full-width address lines */}
+            {fullWidthFields.map(({ key, label, placeholder, icon, required }) => (
+              <div key={key}>
+                <label className="block text-[12px] font-medium text-gray-500 mb-1.5">
+                  {label}{required && <span className="text-red-400 ml-0.5">*</span>}
+                </label>
+                <div className="relative">
+                  <i className={`bi ${icon} absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-[13px] pointer-events-none`}></i>
+                  <input
+                    type="text"
+                    name={key}
+                    value={location[key]}
+                    onChange={update}
+                    placeholder={placeholder}
+                    className={`w-full pl-10 pr-4 py-3 border rounded-xl text-[14px] outline-none transition-all ${
+                      errors[key]
+                        ? 'border-red-300 focus:border-red-400 focus:ring-2 focus:ring-red-100'
+                        : 'border-gray-200 focus:border-gray-400 focus:ring-2 focus:ring-gray-100'
+                    }`}
+                  />
+                </div>
+                {errors[key] && (
+                  <p className="text-[11px] text-red-500 mt-1">{errors[key]}</p>
+                )}
+              </div>
+            ))}
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
-              className="w-full mt-3 bg-red-500 text-white py-2 rounded-lg hover:bg-red-400 text-sm flex justify-center items-center"
               disabled={loading}
+              className="w-full bg-gray-900 hover:bg-gray-800 disabled:bg-gray-400 text-white font-bold py-4 rounded-2xl text-[15px] transition-all flex items-center justify-center gap-2 shadow-lg shadow-gray-900/20 active:scale-[0.98] mt-2"
             >
               {loading ? (
-                <span className="loader border-t-2 border-r-2 border-white border-solid rounded-full h-5 w-5 animate-spin"></span>
+                <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
               ) : (
-                "Save Location"
+                <><i className="bi bi-check-circle"></i> Save Location</>
               )}
             </button>
-          </div>
-
-          
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

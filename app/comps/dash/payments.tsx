@@ -1,6 +1,6 @@
 "use client";
+
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import PaymentDetailsPopup from "./paymentDetails";
 
@@ -11,10 +11,10 @@ interface PaymentDetail {
   paymentMethod: string;
   account: string;
   name: string;
-  email: string,
-  provider: string,
-  address: string,
-  tx_ref: string,
+  email: string;
+  provider: string;
+  address: string;
+  tx_ref: string;
   currency: string;
   details: string;
   status: string;
@@ -24,6 +24,47 @@ interface PaymentDetail {
   createdAt: string;
 }
 
+const formatNumber = (amount: number): string =>
+  new Intl.NumberFormat("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(amount);
+
+const timeAgo = (createdDate: string): string => {
+  const now = new Date();
+  const created = new Date(createdDate);
+  const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
+  if (diffInSeconds < 60) return "Now";
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  const diffInDays = Math.floor(diffInHours / 24);
+  if (diffInDays < 30) return `${diffInDays}d ago`;
+  const diffInMonths = Math.floor(diffInDays / 30);
+  if (diffInMonths < 12) return `${diffInMonths}mo ago`;
+  return `${Math.floor(diffInMonths / 12)}y ago`;
+};
+
+const statusBadge = (status: string) => {
+  const s = status?.toLowerCase();
+  if (s === "paid" || s === "completed") return "bg-emerald-50 text-emerald-600";
+  if (s === "pending") return "bg-amber-50 text-amber-600";
+  return "bg-red-50 text-red-600";
+};
+
+const SkeletonTable = () => (
+  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
+    <div className="h-10 bg-gray-50"></div>
+    {[...Array(5)].map((_, i) => (
+      <div key={i} className="flex items-center gap-4 px-5 py-3 border-t border-gray-50">
+        <div className="h-3 bg-gray-100 rounded w-16"></div>
+        <div className="h-3 bg-gray-100 rounded w-20"></div>
+        <div className="h-3 bg-gray-100 rounded w-24"></div>
+        <div className="h-5 bg-gray-100 rounded-full w-16"></div>
+        <div className="h-3 bg-gray-100 rounded w-12"></div>
+      </div>
+    ))}
+  </div>
+);
+
 const Transactions = () => {
   const [paymentDetails, setPaymentDetails] = useState<PaymentDetail[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -32,34 +73,19 @@ const Transactions = () => {
 
   useEffect(() => {
     const session = JSON.parse(localStorage.getItem("userSession") || "null");
-    if (session && session.id) {
-      setUserId(session.id);
-    } else {
-      setUserId(null);
-    }
+    if (session?.id) setUserId(session.id);
+    else setUserId(null);
   }, []);
 
   useEffect(() => {
     if (!userId) return;
-
     const fetchPayments = async () => {
       try {
-        const response = await fetch(`/api/orders/transactions/${userId}`, {
-          method: "GET",
-          headers: { "Content-Type": "application/json" },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error: ${response.statusText}`);
-        }
-
-        const data = await response.json();
-
-        if (data.success) {
-          setPaymentDetails(data.paymentDetails);
-        } else {
-          setPaymentDetails(null);
-        }
+        const res = await fetch(`/api/orders/transactions/${userId}`);
+        if (!res.ok) throw new Error(res.statusText);
+        const data = await res.json();
+        if (data.success) setPaymentDetails(data.paymentDetails);
+        else setPaymentDetails(null);
       } catch (error) {
         console.error("Failed to fetch payments:", error);
         setPaymentDetails(null);
@@ -67,105 +93,114 @@ const Transactions = () => {
         setLoading(false);
       }
     };
-
     fetchPayments();
   }, [userId]);
 
-  const timeAgo = (createdDate: string): string => {
-    const now = new Date();
-    const created = new Date(createdDate);
-    const diffInSeconds = Math.floor((now.getTime() - created.getTime()) / 1000);
-
-    if (diffInSeconds < 60) return "Now";
-    const diffInMinutes = Math.floor(diffInSeconds / 60);
-    if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes !== 1 ? "s" : ""} ago`;
-    const diffInHours = Math.floor(diffInMinutes / 60);
-    if (diffInHours < 24) return `${diffInHours} hour${diffInHours !== 1 ? "s" : ""} ago`;
-    const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays < 30) return `${diffInDays} day${diffInDays !== 1 ? "s" : ""} ago`;
-    const diffInMonths = Math.floor(diffInDays / 30);
-    if (diffInMonths < 12) return `${diffInMonths} month${diffInMonths !== 1 ? "s" : ""} ago`;
-    return `${Math.floor(diffInMonths / 12)} year${diffInMonths !== 1 ? "s" : ""} ago`;
-  };
-
-  const closeView = () => {
-    setView(null);
-  }
-  if (loading) {
-    return <p className="min-h-[30vh] w-full flex items-center justify-center text-gray-500 text-sm">Loading payments...</p>;
-  }
-
-  if (!userId) {
-    return <p className="min-h-[30vh] w-full flex items-center justify-center text-gray-500 text-sm">You need to log in to view payments.</p>;
-  }
+  if (loading) return <SkeletonTable />;
 
   return (
-    <div className="px-8 pb-4">
-      <h4 className="font-semibold text-sm mb-4 text-gray-700">My Payments</h4>
-      <div className="overflow-x-auto bg-white rounded-md">
-        <table className="min-w-full border-collapse">
-          <thead className="bg-gray-100 text-gray-600 text-sm font-medium">
-            <tr>
-              <th className="py-3 px-6 text-left">Payment Id</th>
-              <th className="py-3 px-6 text-left">Payment Method</th>
-              <th className="py-3 px-6 text-left">Account</th>
-              <th className="py-3 px-6 text-left">Transaction Id</th>
-              <th className="py-3 px-6 text-left">Order</th>
-              <th className="py-3 px-6 text-left">Amount</th>
-              <th className="py-3 px-6 text-left">Status</th>
-              <th className="py-3 px-6 text-left">Created Date</th>
-              <th className="py-3 px-6 text-left">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="text-gray-700 text-sm">
-            {paymentDetails && paymentDetails.length > 0 ? (
-              paymentDetails.map((payment) => {
-                const flutterData = typeof payment.flutter_response === "string"
-                  ? JSON.parse(payment.flutter_response)
-                  : payment.flutter_response;
-
-                return (
-                  <tr key={payment.paymentId} className="border-b hover:bg-gray-50">
-                    <td className="py-3 px-6">#{payment.paymentId}</td>
-                    <td className="py-3 px-6">{payment.paymentMethod}</td>
-                    <td className="py-3 px-6">{payment.account}</td>
-                    <td className="py-3 px-6">{payment.transactionId}</td>
-                    <td className="py-3 px-6">#{payment.orderNumber}</td>
-                    <td className="py-3 px-6">{`${payment.currency} ${payment.amount}`}</td>
-                    <td className={`py-3 px-6`}>
-                       <span  className={`px-2 py-1 rounded ${
-                         payment.status == "Paid"
-                            ? "text-teal-500"
-                            : "text-orange-400 bg-orange-100"
-                            }`}>
-                             {payment.status || "Not paid"}
-                        </span>
-                    </td>
-                    <td className="py-3 px-6">{timeAgo(payment.createdAt)}</td>
-                    <td className="py-3 px-6 flex space-x-2">
-                      <i className="bi bi-info-circle text-emerald-600 border border-emerald-400 bg-emerald-200 px-2 py-[2px] rounded" onClick={() => setView(payment)}></i>
-                      {payment.status !== "Paid" && flutterData?.data?.paymentLinkUrl ? (
-                        <>
-                         <Link href={`/dash/orders/${payment.orderNumber}`} onClick={() => redirect(`/dash/orders${payment.orderNumber}`)} className="text-orange-600 border border-orange-400 bg-orange-200 px-2 py-[2px] rounded text-nowrap">View Order</Link>
-                         <Link href={ flutterData?.data?.paymentLinkUrl} onClick={() => redirect(flutterData?.data?.paymentLinkUrl)} className="text-teal-600 border border-teal-400 bg-teal-200 px-2 py-[2px] rounded">Pay</Link>
-                        </>
-                       ):(
-                        <>
-                        <Link href={`/dash/orders/${payment.orderNumber}`} onClick={() => redirect(`/dash/orders${payment.orderNumber}`)} className="text-orange-600 border border-orange-400 bg-orange-200 px-2 py-[2px] rounded text-nowrap">View Order</Link>
-                       
-                       </>
-                       )}
-                    </td>
-                  </tr>
-                );
-              })
-            ) : (
-              <tr><td colSpan={8} className="py-4 text-center text-gray-500 italic">No payments found.</td></tr>
-            )}
-          </tbody>
-        </table>
+    <div>
+      {/* Section header */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-[15px] font-bold text-gray-900">Payments</h2>
       </div>
-      {view && <PaymentDetailsPopup payment={view} onClose={closeView}/>}
+
+      {/* Table */}
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="min-w-full">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-100">
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium">ID</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium">Method</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium hidden sm:table-cell">Account</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium hidden md:table-cell">Transaction</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium">Amount</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium">Status</th>
+                <th className="py-3 px-5 text-left text-[12px] uppercase tracking-wider text-gray-400 font-medium hidden lg:table-cell">Date</th>
+                <th className="py-3 px-5 text-right text-[12px] uppercase tracking-wider text-gray-400 font-medium">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-50">
+              {paymentDetails && paymentDetails.length > 0 ? (
+                paymentDetails.map((payment) => {
+                  const flutterData = typeof payment.flutter_response === "string"
+                    ? JSON.parse(payment.flutter_response)
+                    : payment.flutter_response;
+
+                  return (
+                    <tr key={payment.paymentId} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="py-3 px-5">
+                        <span className="text-[13px] font-semibold text-gray-900">#{payment.paymentId}</span>
+                      </td>
+                      <td className="py-3 px-5">
+                        <span className="text-[13px] text-gray-500">{payment.paymentMethod}</span>
+                      </td>
+                      <td className="py-3 px-5 hidden sm:table-cell">
+                        <span className="text-[13px] text-gray-500">{payment.account}</span>
+                      </td>
+                      <td className="py-3 px-5 hidden md:table-cell">
+                        <span className="text-[12px] text-gray-400 font-mono">{payment.transactionId}</span>
+                      </td>
+                      <td className="py-3 px-5">
+                        <span className="text-[13px] font-medium text-gray-700">
+                          {formatNumber(payment.amount)}
+                          <span className="text-[10px] text-gray-400 ml-0.5">{payment.currency}</span>
+                        </span>
+                      </td>
+                      <td className="py-3 px-5">
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[12px] font-medium ${statusBadge(payment.status)}`}>
+                          {payment.status || "Unpaid"}
+                        </span>
+                      </td>
+                      <td className="py-3 px-5 hidden lg:table-cell">
+                        <span className="text-[12px] text-gray-400">{timeAgo(payment.createdAt)}</span>
+                      </td>
+                      <td className="py-3 px-5">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => setView(payment)}
+                            className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors"
+                            title="Details"
+                          >
+                            <i className="bi bi-info-circle text-[13px] text-gray-500"></i>
+                          </button>
+                          <Link
+                            href={`/dash/orders/${payment.orderNumber}`}
+                            className="w-8 h-8 rounded-lg bg-gray-50 hover:bg-gray-100 flex items-center justify-center transition-colors"
+                            title="View Order"
+                          >
+                            <i className="bi bi-eye text-[13px] text-gray-500"></i>
+                          </Link>
+                          {payment.status !== "Paid" && flutterData?.data?.paymentLinkUrl && (
+                            <a
+                              href={flutterData.data.paymentLinkUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="h-8 px-3 rounded-lg bg-gray-900 hover:bg-gray-800 text-white text-[12px] font-medium flex items-center justify-center transition-colors"
+                            >
+                              Pay
+                            </a>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              ) : (
+                <tr>
+                  <td colSpan={8} className="py-12 text-center">
+                    <i className="bi bi-credit-card text-gray-200 text-3xl"></i>
+                    <p className="text-[13px] text-gray-400 mt-2">No payments found</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {view && <PaymentDetailsPopup payment={view} onClose={() => setView(null)} />}
     </div>
   );
 };

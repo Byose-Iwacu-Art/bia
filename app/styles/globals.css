@@ -1,9 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* Import Glider.js styles */
+
 *{
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1, h2 {
+  font-family: 'Playfair Display', Georgia, 'Times New Roman', serif;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .slidebg{
@@ -50,7 +59,7 @@ footer .container {
 }
 
 .container h1 {
-  color: #f97316;
+  color: #111827;
   font-weight: 600;
   font-size: 24px;
 }
@@ -87,7 +96,7 @@ footer .container {
   margin: 5px;
   padding: 8px;
   font-family: Verdana, Geneva, Tahoma, sans-serif;
-  color: #f97316;
+  color: #111827;
 }
 
 .data .text {
@@ -155,12 +164,12 @@ footer .container {
 
 .inputs input:focus,
 .text textarea:focus {
-  border-bottom: 1px solid #f97316;
+  border-bottom: 1px solid #9ca3af;
 }
 
 .submit button {
   width: 100%;
-  background: #f97316;
+  background: #111827;
   color: #fff;
   cursor: pointer;
 }
@@ -195,7 +204,7 @@ footer .container {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  background: #f97316;
+  background: #111827;
   padding: 10px;
   border-radius: 50%;
   color: white;
@@ -220,43 +229,19 @@ footer .container {
       background-color: #f89e9e;
     }
     .dashbar{
-       width: calc(100% - 200px);
+       width: calc(100% - 240px);
     }
     
     @media (max-width: 640px) {
-      .box {
-          min-width: 100%; /* Stack full width on very small screens */
-      }
       main{
         margin-bottom: 20px;
         margin-top: 100px;
     }
   }
-  
-  @media (min-width: 640px) {
-      .box {
-          min-width: 48%; /* Two items per row on small screens */
-      }
-  }
-  
+
   @media (min-width: 768px) {
-      .box {
-          min-width: 30%; /* Three items per row on medium screens */
-      }
       main{
         margin-top: 130px;
-      }
-  }
-  
-  @media (min-width: 1024px) {
-      .box {
-          min-width: 22%; /* Four items per row on large screens */
-      }
-  }
-  
-  @media (min-width: 1280px) {
-      .box {
-          min-width: 16%; /* Six items per row on extra-large screens */
       }
   }
   
@@ -286,7 +271,7 @@ footer .container {
       .small-device-menu i {
         display: block;
         font-size: 25px;
-        color: #ffb330;
+        color: #111827;
       }
     
       .small-device-menu span {
@@ -295,7 +280,7 @@ footer .container {
     
       /* Add subtle animation for active link */
       .small-device-menu a.active {
-        color: #ff6600;
+        color: #111827;
       }
     }
     /* Custom styles for Swiper navigation buttons */
