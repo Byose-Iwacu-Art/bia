@@ -1,42 +1,39 @@
 "use client";
+
 import { useState } from "react";
 import Link from "next/link";
 import ProfileStatus from "./profileStatus";
 
 const links = [
-  { href: "/dash/profile", icon: "bi-person", text: "Personal informations", desc: "View and edit your details" },
-  //{ href: "/dash/profile/login_security", icon: "bi-shield", text: "Login and security", desc: "Manage account authentication" },
-//  { href: "/dash/profile/personal_address", icon: "bi-geo-alt", text: "Personal address", desc: "Manage billing and delivery address" },
-  //{ href: "/dash/profile/data_privacy", icon: "bi-lock", text: "Data privacy", desc: "Now supportive data privacy" }
+  { href: "/dash/profile", icon: "bi-person", text: "Personal Information", desc: "View and edit your details" },
 ];
 
 const ProfileBar = () => {
-  const [activeLink, setActiveLink] = useState("");
-
-  const handleLinkClick = (href: any) => {
-    setActiveLink(href);
-  };
+  const [activeLink, setActiveLink] = useState("/dash/profile");
 
   return (
-    <div className="flex flex-col w-full sm:w-[30%] p-5 bg-white border-t border-r border-slate-100">
-      <div>
-        <ProfileStatus completionPercentage={80} />
-      </div>
-      <div className="flex flex-col space-y-2 mt-4">
-        {links.map((link, index) => (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 h-max">
+      <ProfileStatus completionPercentage={80} />
+
+      <div className="flex flex-col space-y-1 mt-5">
+        {links.map((link) => (
           <Link
-            key={index}
-            href={""}
-            className={`flex flex-nowrap items-center text-base sm:text-sm md:text-base px-2 py-3 duration-300 rounded-md ${
-              activeLink === link.href ? "bg-slate-100" : ""
+            key={link.href}
+            href={link.href}
+            className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-colors ${
+              activeLink === link.href
+                ? "bg-gray-50 border-l-2 border-gray-900"
+                : "hover:bg-gray-50"
             }`}
-            onClick={() => handleLinkClick(link.href)}
+            onClick={() => setActiveLink(link.href)}
           >
-            <i className={`bi ${link.icon} text-base sm:text-lg mr-5 bg-slate-50 px-2 py-1 rounded-full`}></i>
-            <span className="text-sm">
-              <h4 className="text-gray-700 font-semibold">{link.text}</h4>
-              <span className="text-xs text-slate-400">{link.desc}</span>
-            </span>
+            <div className="w-9 h-9 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <i className={`bi ${link.icon} text-[15px] text-gray-500`}></i>
+            </div>
+            <div className="min-w-0">
+              <p className="text-[13px] font-semibold text-gray-900">{link.text}</p>
+              <p className="text-[11px] text-gray-400">{link.desc}</p>
+            </div>
           </Link>
         ))}
       </div>

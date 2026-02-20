@@ -1,27 +1,31 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from "react";
 import Transactions from "@/app/comps/dash/payments";
+import { useAuthModal } from "@/app/comps/auth/AuthModalContext";
 
 const Payments = () => {
-    const router = useRouter();
+    const [authed, setAuthed] = useState(false);
+    const { openLogin } = useAuthModal();
 
     useEffect(() => {
         const session = JSON.parse(localStorage.getItem('userSession') || 'null');
-        
         if (!session) {
-            router.push("/auth/login");
+            openLogin(() => setAuthed(true));
+        } else {
+            setAuthed(true);
         }
-    }, [router]); // Added `router` to dependency array
+    }, [openLogin]);
+
+    if (!authed) return null;
 
     return (
-        <div className="sm:ml-[200px] mt-[80px] py-8 bg-slate-50">
-            <head>
-                <title>My payments </title>
-            </head>
-            <Transactions />
-        </div>
+        <>
+            <title>My Payments</title>
+            <div className="min-h-screen">
+                <Transactions />
+            </div>
+        </>
     );
 };
 

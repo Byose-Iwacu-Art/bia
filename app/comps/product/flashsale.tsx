@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import Preloader from "../forms/PreDivLoader";
-import 'swiper/swiper-bundle.css'; // Import Swiper styles
+import Image from "next/image";
+import Link from "next/link";
+import 'swiper/swiper-bundle.css';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination } from 'swiper/modules';
-import { FlashCard } from "./card";
+import { Autoplay } from 'swiper/modules';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 interface Product {
   id: number;
@@ -16,100 +17,87 @@ interface Product {
   promotion: number;
 }
 
-const FlashSales =  () => {
+const fmt = (n: number) => new Intl.NumberFormat("en-US").format(Math.round(n));
+
+const FlashSales = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [slidesPerView, setSlidesPerView] = useState(5);
 
   useEffect(() => {
-      fetch("/api/products/discount")
-          .then((response) => {
-              if (!response.ok) {
-                  throw new Error("Failed to fetch discount");
-              }
-              return response.json();
-          })
-          .then((data) => {
-              setProducts(data);
-              setLoading(false);
-          })
-          .catch((err) => {
-              setError(err.message);
-              setLoading(false);
-          });
+    fetch("/api/products/discount")
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => { setProducts(data); setLoading(false); })
+      .catch(() => setLoading(false));
   }, []);
 
-  // Adjust slides per view based on screen size
-useEffect(() => {
-  const handleResize = () => {
-    setSlidesPerView(window.innerWidth < 640 ? 2 : 5);
-  };
+  useEffect(() => {
+    const handle = () => setSlidesPerView(window.innerWidth < 640 ? 2 : window.innerWidth < 1024 ? 3 : 5);
+    handle();
+    window.addEventListener("resize", handle);
+    return () => window.removeEventListener("resize", handle);
+  }, []);
 
-  // Set initial slidesPerView value
-  handleResize();
+  if (loading || products.length === 0) return null;
 
-  // Listen for window resize
-  window.addEventListener("resize", handleResize);
-
-  // Cleanup event listener on component unmount
-  return () => window.removeEventListener("resize", handleResize);
-}, []);
-  if (loading) {
-      return <Preloader />;
-  }
-
-  if (error) {
-      return <div className="text-center text-red-500 py-6">{error}</div>
-  }
-  if(products.length <= 0){
-    return <div></div>
-  }
-  return(
-    <>
-     <div className="flex flex-wrap sm:flex-nowrap">
-      <div className="disbg text-white w-full sm:w-[18vw] p-6">
-        <h1 className="text-3xl text-center font-semibold">Flash Sale</h1>
-        <p className="my-3 text-center">
-          Up to 50% OFF
-        </p>
-        <div className="text-2xl pb-4 text-center text-red-500 px-2">Shop More Get Larger Discount</div>
-        <button className="p-2 w-full rounded-3xl bg-slate-300 text-slate-900 mx-auto">Start now</button>
+  return (
+    <div className="flex flex-col sm:flex-row w-full gap-0 rounded-xl overflow-hidden border border-gray-100 shadow-sm my-6">
+      {/* Label panel */}
+      <div className="disbg text-white w-full sm:w-[180px] flex-shrink-0 p-6 flex flex-col justify-center items-center text-center">
+        <i className="bi bi-fire text-3xl text-orange-400 mb-2"></i>
+        <h2 className="text-xl font-extrabold mb-1">Flash Sale</h2>
+        <p className="text-white/70 text-[13px] mb-3">Up to 50% OFF</p>
+        <p className="text-orange-300 text-[12px] font-semibold">Shop more, save more</p>
       </div>
-      <div className="w-full sm:w-[75vw] h-max">
-        
 
+      {/* Swiper */}
+      <div className="flex-1 min-w-0">
         <Swiper
-        spaceBetween={0}
-        slidesPerView={slidesPerView}
-        autoplay={{ delay: 4000, disableOnInteraction: false }}
-        pagination={{ clickable: true }}
-        loop={true}
-        className="w-full h-full rounded-xl sm:rounded-none"
-        modules={[Autoplay]} 
-        speed={2000}
-      >
-            {products.map((item) => (
-              <SwiperSlide key={item.id} className="relative w-full h-full border-b border-slate-50">
-                <>
-                <FlashCard
-                 id={item.id}
-                 hashed_id={item.hashed_id}
-                 price={item.price}
-                 name={item.name}
-                 image={item.image}
-                 details=""
-                 color=""
-                 size={item.discount}
-                 promotion={item.promotion}
-                /></>
+          spaceBetween={8}
+          slidesPerView={slidesPerView}
+          autoplay={{ delay: 3500, disableOnInteraction: false }}
+          loop={true}
+          modules={[Autoplay]}
+          speed={1800}
+          className="w-full h-full p-3"
+        >
+          {products.map((item) => {
+            const discountedPrice = Number(item.price) - (Number(item.price) * (item.discount || item.promotion) / 100);
+            return (
+              <SwiperSlide key={item.id} className="h-auto">
+                <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-all border border-gray-100 flex flex-col h-full">
+                  <Link href={`/products/${item.hashed_id}`}>
+                    <div className="relative aspect-[4/3] bg-gray-50 overflow-hidden">
+                      <Image
+                        src={item.image || '/imgs/logo.ico'}
+                        alt={item.name}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width:640px) 50vw, 20vw"
+                        loading="lazy"
+                      />
+                      <span className="absolute top-2 left-2 bg-orange-500 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">
+                        -{item.discount || item.promotion}%
+                      </span>
+                    </div>
+                  </Link>
+                  <div className="p-2 flex flex-col flex-1">
+                    <Link href={`/products/${item.hashed_id}`}>
+                      <p className="text-[11px] text-gray-800 font-medium line-clamp-2 mb-1 hover:text-orange-600 transition-colors">
+                        {item.name}
+                      </p>
+                    </Link>
+                    <p className="text-[10px] text-gray-400 line-through">{fmt(Number(item.price))} RWF</p>
+                    <p className="text-[12px] font-bold text-orange-600">{fmt(discountedPrice)} RWF</p>
+                  </div>
+                </div>
               </SwiperSlide>
-            ))}
+            );
+          })}
         </Swiper>
-        </div>
-        
+      </div>
     </div>
-    </>
   );
-}
+};
+
 export default FlashSales;

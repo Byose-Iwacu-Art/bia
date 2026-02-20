@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -24,95 +26,115 @@ interface PaymentDetailsProps {
   onClose: () => void;
 }
 
-const formatNumber = (amount: number): string => {
-  return new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
-};
+const formatNumber = (amount: number): string =>
+  new Intl.NumberFormat("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
 
 function formatDate(dateString: string) {
   const date = new Date(dateString);
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const year = date.getFullYear();
-  const month = months[date.getMonth()];
-  const day = String(date.getDate()).padStart(2, "0");
-  const hours = String(date.getHours()).padStart(2, "0");
-  const minutes = String(date.getMinutes()).padStart(2, "0");
-  const seconds = String(date.getSeconds()).padStart(2, "0");
-  return `${month}, ${day} ${year} ${hours}:${minutes}:${seconds}`;
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 }
 
-const statusColor = (status: string) => {
-  switch (status.toLowerCase()) {
-    case "completed":
-      return "bg-green-100 text-green-700";
-    case "pending":
-      return "bg-yellow-100 text-yellow-700";
-    case "failed":
-    case "canceled":
-      return "bg-red-100 text-red-700";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
+const statusBadge = (status: string) => {
+  const s = status?.toLowerCase();
+  if (s === "paid" || s === "completed") return "bg-emerald-50 text-emerald-600";
+  if (s === "pending") return "bg-amber-50 text-amber-600";
+  return "bg-red-50 text-red-600";
 };
+
+const FIELDS = [
+  { label: "Payment ID", key: "paymentId", icon: "bi-hash" },
+  { label: "Transaction ID", key: "transactionId", icon: "bi-upc-scan" },
+  { label: "Order Number", key: "orderNumber", icon: "bi-bag" },
+  { label: "Account", key: "account", icon: "bi-phone" },
+  { label: "Name", key: "name", icon: "bi-person" },
+  { label: "Email", key: "email", icon: "bi-envelope" },
+  { label: "Address", key: "address", icon: "bi-geo-alt" },
+  { label: "Provider", key: "provider", icon: "bi-building" },
+  { label: "Method", key: "paymentMethod", icon: "bi-credit-card" },
+  { label: "Tx Ref", key: "tx_ref", icon: "bi-link-45deg" },
+  { label: "Details", key: "details", icon: "bi-file-text" },
+  { label: "Payment Date", key: "paymentDate", icon: "bi-calendar-event", format: true },
+  { label: "Created At", key: "createdAt", icon: "bi-clock", format: true },
+] as const;
 
 const PaymentDetailsPopup: React.FC<PaymentDetailsProps> = ({ payment, onClose }) => {
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        className="fixed inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm z-50 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
+        onClick={onClose}
       >
         <motion.div
           className="bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[85vh] flex flex-col overflow-hidden"
-          initial={{ scale: 0.7, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.7, opacity: 0 }}
-          transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          initial={{ scale: 0.95, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          exit={{ scale: 0.95, opacity: 0, y: 20 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
-          <div className="flex justify-between items-center px-6 py-4 bg-gradient-to-r from-teal-400 to-cyan-500 text-white">
-            <h2 className="text-lg font-semibold">Payment Details</h2>
-            <button
-              onClick={onClose}
-              className="bg-white text-teal-500 rounded-full w-8 h-8 flex items-center justify-center shadow hover:bg-gray-100 transition"
-            >
-              &times;
-            </button>
+          <div className="bg-gray-900 px-6 py-5 text-white">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-[16px] font-bold">Payment Details</h2>
+                <p className="text-[12px] text-gray-400 mt-0.5">Transaction #{payment.paymentId}</p>
+              </div>
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+              >
+                <i className="bi bi-x-lg text-[12px] text-white"></i>
+              </button>
+            </div>
+
+            {/* Amount + Status */}
+            <div className="mt-4 flex items-end justify-between">
+              <div>
+                <p className="text-[11px] text-gray-400 uppercase tracking-wider">Amount</p>
+                <p className="text-[28px] font-extrabold text-emerald-400 leading-tight">
+                  {formatNumber(payment.amount)}
+                  <span className="text-[13px] font-medium text-gray-400 ml-1">{payment.currency}</span>
+                </p>
+              </div>
+              <span className={`inline-flex items-center rounded-full px-3 py-1 text-[12px] font-medium ${statusBadge(payment.status)}`}>
+                {payment.status}
+              </span>
+            </div>
           </div>
 
-          {/* Scrollable content */}
-          <div className="overflow-y-auto px-6 py-4 space-y-3 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-            <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusColor(payment.status)}`}>
-              {payment.status}
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-              <div><strong>Payment ID:</strong> {payment.paymentId}</div>
-              <div><strong>Transaction ID:</strong> {payment.transactionId}</div>
-              <div><strong>Order Number:</strong> {payment.orderNumber}</div>
-              <div><strong>Account:</strong> {payment.account}</div>
-              <div><strong>Name:</strong> {payment.name}</div>
-              <div><strong>Email:</strong> {payment.email}</div>
-              <div><strong>Address:</strong> {payment.address}</div>
-              <div><strong>Provider:</strong> {payment.provider}</div>
-              <div><strong>Payment Method:</strong> {payment.paymentMethod}</div>
-              <div><strong>Tx Ref:</strong> {payment.tx_ref}</div>
-              <div><strong>Amount:</strong> {formatNumber(payment.amount)} {payment.currency}</div>
-              <div><strong>Details:</strong> {payment.details || "N/A"}</div>
-              <div><strong>Payment Date:</strong> {formatDate(payment.paymentDate)}</div>
-              <div><strong>Created At:</strong> {formatDate(payment.createdAt)}</div>
-            </div>
+          {/* Content */}
+          <div className="overflow-y-auto flex-1 px-6 py-4 space-y-2">
+            {FIELDS.map((field) => {
+              const value = (payment as any)[field.key];
+              if (!value && value !== 0) return null;
+              return (
+                <div key={field.key} className="bg-gray-50 rounded-xl px-4 py-3 flex items-center gap-3">
+                  <i className={`bi ${field.icon} text-[14px] text-gray-400 flex-shrink-0`}></i>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[11px] text-gray-400 uppercase tracking-wider">{field.label}</p>
+                    <p className="text-[13px] font-medium text-gray-700 truncate">
+                      {field.format ? formatDate(String(value)) : String(value) || "N/A"}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           {/* Footer */}
-          <div className="px-6 py-3 border-t flex justify-end bg-gray-50">
+          <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/50">
             <button
               onClick={onClose}
-              className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg shadow transition"
+              className="w-full py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-[13px] font-bold rounded-xl transition-colors"
             >
               Close
             </button>
