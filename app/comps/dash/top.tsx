@@ -198,7 +198,7 @@ const Top = ({ onSidebarClick }: { onSidebarClick: (id: string) => void }) => {
             </button>
             {isCartOpen && (
               <div className="absolute right-0 mt-2 w-80 bg-white shadow-xl rounded-2xl border border-gray-100 overflow-hidden z-50">
-                <CartDropdown setCartItem={setCartItems} onClose={() => setIsCartOpen(false)} />
+                <CartDropdown open={isCartOpen} onClose={() => setIsCartOpen(false)} />
               </div>
             )}
           </div>
