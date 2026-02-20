@@ -69,7 +69,7 @@ export default function WishlistPage() {
     }
     localStorage.setItem('cart', JSON.stringify(cart));
     window.dispatchEvent(new StorageEvent('storage', { key: 'cart' }));
-    setCartIds(prev => [...new Set([...prev, item.product_id])]);
+    setCartIds(prev => Array.from(new Set([...prev, item.product_id])));
 
     if (userId) {
       fetch('/api/cart', {

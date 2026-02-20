@@ -53,7 +53,7 @@ const ProductList: React.FC<ProductListProps> = ({ products, sortPage, loading }
   }, [sortPage, selectedCats, priceMax, onSaleOnly, inStockOnly]);
 
   // Derived filter options from product data
-  const allCategories = [...new Set(products.map(p => p.category).filter(Boolean))].sort() as string[];
+  const allCategories = Array.from(new Set(products.map(p => p.category).filter(Boolean))).sort() as string[];
   const maxPrice = products.length ? Math.max(...products.map(p => Number(p.price))) : 100000;
 
   const toggleCat = (cat: string) => {
