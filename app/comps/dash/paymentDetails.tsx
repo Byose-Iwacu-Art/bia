@@ -61,7 +61,7 @@ const FIELDS = [
   { label: "Details", key: "details", icon: "bi-file-text" },
   { label: "Payment Date", key: "paymentDate", icon: "bi-calendar-event", format: true },
   { label: "Created At", key: "createdAt", icon: "bi-clock", format: true },
-] as const;
+]: { label: string; key: string; icon: string; format?: boolean }[];
 
 const PaymentDetailsPopup: React.FC<PaymentDetailsProps> = ({ payment, onClose }) => {
   return (
