@@ -23,7 +23,7 @@ const InvoicePage: React.FC = () => {
     customerName: "John Doe",
     customerEmail: "john@example.com",
     companyName: "Bia eCommerce",
-    companyAddress: "Kigali, Rwanda",
+    companyAddress: "29 KG 40 St, Kigali, Rwanda",
     items: [
       { name: "Handwoven Basket", price: 25, quantity: 2 },
       { name: "Traditional Fabric", price: 40, quantity: 1 },

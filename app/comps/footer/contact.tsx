@@ -91,7 +91,7 @@ const Contact = () => {
   const contactInfo = [
     { icon: "bi-telephone-fill", label: "Phone", value: "+250 788 282 252", color: "text-orange-500" },
     { icon: "bi-envelope-fill", label: "Email", value: "info@biafricantouch.com", color: "text-orange-500" },
-    { icon: "bi-geo-alt-fill", label: "Location", value: "Kigali, Rwanda", color: "text-orange-500" },
+    { icon: "bi-geo-alt-fill", label: "Location", value: "29 KG 40 St, Kigali, Rwanda", color: "text-orange-500" },
     { icon: "bi-clock-fill", label: "Hours", value: "Mon – Sat, 8am – 6pm", color: "text-orange-500" },
   ];
 
